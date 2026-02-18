@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('role_id')->constrained()->onDelete('restrict');
+            $table->foreignId('role_id')->constrained()->onDelete('restrict')->default(1);
             $table->boolean('is_active')->default(true);
         });
     }
