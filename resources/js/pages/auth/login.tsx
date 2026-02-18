@@ -1,12 +1,13 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
+import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
-import { store } from '@/routes/login';
 import { register } from '@/routes';
+import { store } from '@/routes/login';
 
 type Props = {
     status?: string;
@@ -42,7 +43,7 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="aulafutura@correo.com"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -58,7 +59,7 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="abc123..."
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -73,12 +74,12 @@ export default function Login({
                                 {processing && <Spinner />}
                                 Ingresar
                             </Button>
-                            <Link
-                            href={register().url}
-                                className='text-center inline-block mx-auto w-full text-gray-400 underline'
-                            >
-                                Registrate aqui
-                            </Link>
+                            <div className="text-center text-sm text-muted-foreground">
+                                ¿No tienes una cuenta?{' '}
+                                <TextLink href={register().url} tabIndex={6}>
+                                    Registrate ahora
+                                </TextLink>
+                            </div>
                         </div>
                     </>
                 )}
