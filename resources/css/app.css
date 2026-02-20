@@ -142,7 +142,26 @@
     --sidebar-ring: oklch(0.439 0 0);
 }
 
+@font-face {
+    font-family: 'Unbounded';
+    src: url('../fonts/Unbounded-Variable.ttf');
+    font-weight: 200 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('../fonts/Geist-Variable.ttf');
+    font-weight: 200 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 @theme {
+    --font-primary: 'Unbounded', sistem-ui, sans-serif;
+    --font-base: 'Geist', sistem-ui, sans-serif;
+
     --text-xs: var(--step--2);
     --text-sm: var(--step--1);
     --text-base: var(--step-0);
