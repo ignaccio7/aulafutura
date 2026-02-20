@@ -1,8 +1,9 @@
 import { Link, router } from '@inertiajs/react';
-import { ArrowRight, BookOpen, Search, Video } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { ArrowUpRight, BookOpen, PackageOpen, Search, Video, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
-// Interfaces (puedes moverlas a un archivo types.d.ts si prefieres)
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 export interface Product {
     id: number;
     title: string;
@@ -25,39 +26,317 @@ interface CatalogProps {
     };
 }
 
+// ─── Skeleton Card ────────────────────────────────────────────────────────────
+
+function SkeletonCard() {
+    return (
+        <div className="overflow-hidden rounded-3xl border border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900">
+            {/* Image area */}
+            <div className="h-52 w-full animate-pulse bg-slate-200 dark:bg-slate-700" />
+            {/* Content area */}
+            <div className="flex flex-col gap-3 p-6">
+                {/* Badge */}
+                <div className="h-5 w-16 animate-pulse rounded-full bg-slate-200 dark:bg-slate-700" />
+                {/* Title */}
+                <div className="space-y-2">
+                    <div className="h-5 w-full animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+                    <div className="h-5 w-3/4 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+                </div>
+                {/* Description */}
+                <div className="space-y-1.5">
+                    <div className="h-3.5 w-full animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+                    <div className="h-3.5 w-5/6 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+                </div>
+                {/* Price + CTA */}
+                <div className="mt-2 flex items-center justify-between">
+                    <div className="h-7 w-24 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-700" />
+                    <div className="h-10 w-10 animate-pulse rounded-2xl bg-slate-200 dark:bg-slate-700" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Product Card ─────────────────────────────────────────────────────────────
+
+interface ProductCardProps {
+    product: Product;
+}
+
+function ProductCard({ product }: ProductCardProps) {
+    const isBook = product.type === 'book';
+
+    return (
+        <Link
+            href={`/productos/${product.id}`}
+            className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
+        >
+            {/* ── Thumbnail ── */}
+            <div
+                className={`relative h-52 overflow-hidden ${isBook
+                        ? 'bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40'
+                        : 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40'
+                    }`}
+            >
+                {product.thumbnail ? (
+                    <img
+                        src={`/storage/${product.thumbnail}`}
+                        alt={product.title}
+                        className="h-full w-full object-cover object-[center_30%] transition-transform duration-500 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                        {isBook ? (
+                            <BookOpen
+                                size={48}
+                                className="text-amber-300/60 dark:text-amber-600/40"
+                            />
+                        ) : (
+                            <Video
+                                size={48}
+                                className="text-blue-300/60 dark:text-blue-600/40"
+                            />
+                        )}
+                    </div>
+                )}
+
+                {/* Overlay gradient at bottom */}
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
+
+                {/* Type badge */}
+                <span
+                    className={`absolute top-3 left-3 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm ${isBook
+                            ? 'bg-amber-50/90 text-amber-700 ring-1 ring-amber-200/60 dark:bg-amber-950/80 dark:text-amber-400 dark:ring-amber-800/60'
+                            : 'bg-blue-50/90 text-blue-700 ring-1 ring-blue-200/60 dark:bg-blue-950/80 dark:text-blue-400 dark:ring-blue-800/60'
+                        }`}
+                >
+                    {isBook ? <BookOpen size={12} /> : <Video size={12} />}
+                    {isBook ? 'PDF' : 'CURSO'}
+                </span>
+            </div>
+
+            {/* ── Content ── */}
+            <div className="flex flex-1 flex-col p-6">
+                <h3 className="mb-1.5 line-clamp-2 text-base font-bold leading-snug text-slate-900 dark:text-white">
+                    {product.title}
+                </h3>
+
+                {product.description && (
+                    <p className="mb-4 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                        {product.description}
+                    </p>
+                )}
+
+                {/* ── Footer ── */}
+                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div>
+                        <p className="text-[11px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                            Precio
+                        </p>
+                        <p className="text-xl font-black text-slate-900 dark:text-white">
+                            Bs. {product.price}
+                        </p>
+                    </div>
+
+                    <span
+                        className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-600/30 transition-all duration-200 group-hover:scale-110 group-hover:bg-blue-500 group-hover:shadow-blue-500/40 dark:bg-blue-500 dark:shadow-blue-500/30"
+                        aria-label={`Ver ${product.title}`}
+                    >
+                        <ArrowUpRight size={18} />
+                    </span>
+                </div>
+            </div>
+        </Link>
+    );
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+interface EmptyStateProps {
+    searchTerm: string;
+    onClear: () => void;
+}
+
+function EmptyState({ searchTerm, onClear }: EmptyStateProps) {
+    return (
+        <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100 dark:bg-slate-800">
+                <PackageOpen
+                    size={36}
+                    className="text-slate-400 dark:text-slate-500"
+                />
+            </div>
+            <h3 className="mb-2 text-lg font-bold text-slate-800 dark:text-white">
+                Sin resultados
+            </h3>
+            <p className="mb-6 max-w-xs text-sm text-slate-500 dark:text-slate-400">
+                {searchTerm
+                    ? `No encontramos productos para "${searchTerm}". Intenta con otro término.`
+                    : 'No hay productos en esta categoría por ahora.'}
+            </p>
+            {searchTerm && (
+                <button
+                    onClick={onClear}
+                    className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                    <X size={14} />
+                    Limpiar búsqueda
+                </button>
+            )}
+        </div>
+    );
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+interface PaginationProps {
+    links: PaginatedData['links'];
+}
+
+function Pagination({ links }: PaginationProps) {
+    if (links.length <= 3) return null;
+
+    return (
+        <div className="mt-14 flex justify-center">
+            <div className="flex flex-wrap items-center justify-center gap-1">
+                {links.map((link, index) => {
+                    if (link.url === null) {
+                        return (
+                            <span
+                                key={index}
+                                className="flex h-9 min-w-9 items-center justify-center rounded-xl border border-slate-200 px-3 text-sm text-slate-300 dark:border-slate-700 dark:text-slate-600"
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                            />
+                        );
+                    }
+
+                    return (
+                        <Link
+                            key={index}
+                            href={link.url}
+                            preserveScroll
+                            preserveState
+                            className={`flex h-9 min-w-9 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-150 ${link.active
+                                    ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/25 dark:border-blue-500 dark:bg-blue-500'
+                                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                                }`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ─── Search Input ─────────────────────────────────────────────────────────────
+
+interface SearchInputProps {
+    value: string;
+    onChange: (value: string) => void;
+    onClear: () => void;
+}
+
+function SearchInput({ value, onChange, onClear }: SearchInputProps) {
+    return (
+        <div className="relative">
+            <Search
+                size={16}
+                className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="block w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-9 pl-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-64 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-400"
+            />
+            {value && (
+                <button
+                    onClick={onClear}
+                    className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-200"
+                    aria-label="Limpiar búsqueda"
+                >
+                    <X size={14} />
+                </button>
+            )}
+        </div>
+    );
+}
+
+// ─── Tab Filter ───────────────────────────────────────────────────────────────
+
+const TABS = [
+    { value: 'all', label: 'Todos' },
+    { value: 'book', label: 'Libros' },
+    { value: 'course', label: 'Cursos' },
+] as const;
+
+interface TabFilterProps {
+    active: string;
+    onChange: (value: string) => void;
+}
+
+function TabFilter({ active, onChange }: TabFilterProps) {
+    return (
+        <div className="flex gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800">
+            {TABS.map((tab) => (
+                <button
+                    key={tab.value}
+                    onClick={() => onChange(tab.value)}
+                    className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150 ${active === tab.value
+                            ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                            : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                        }`}
+                >
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+}
+
+// ─── Catalog (Main) ───────────────────────────────────────────────────────────
+
+const SKELETON_COUNT = 6;
+
 export default function Catalog({
     products,
     filters = { search: '', type: 'all' },
 }: CatalogProps) {
-    const brandBg = 'bg-[#1D4ED8] dark:bg-blue-600';
-
-    // Estados locales sincronizados con los filtros de la URL
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [activeTab, setActiveTab] = useState(filters.type || 'all');
+    const [isLoading, setIsLoading] = useState(false);
+    const isFirstRender = useRef(true);
 
-    // Función que usa Inertia para pedir nuevos datos al controlador
     const applyFilters = (search: string, type: string) => {
+        setIsLoading(true);
         router.get(
-            '/', // <-- Usamos directamente la URL de la Landing Page
+            '/',
             { search, type },
             {
                 preserveState: true,
                 preserveScroll: true,
                 replace: true,
+                onFinish: () => setIsLoading(false),
             },
         );
     };
 
-    // Efecto de búsqueda (Debounce de 400ms)
+    // Debounced search
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            // Solo buscamos si el término cambió respecto al filtro actual de la URL
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        const id = setTimeout(() => {
             if (searchTerm !== (filters.search || '')) {
                 applyFilters(searchTerm, activeTab);
             }
         }, 400);
 
-        return () => clearTimeout(timeoutId);
+        return () => clearTimeout(id);
     }, [searchTerm]);
 
     const handleTabChange = (newType: string) => {
@@ -65,162 +344,81 @@ export default function Catalog({
         applyFilters(searchTerm, newType);
     };
 
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        applyFilters('', activeTab);
+    };
+
+    const showProducts = !isLoading && products.data.length > 0;
+    const showEmpty = !isLoading && products.data.length === 0;
+
     return (
         <section
             id="catalogo"
-            className="bg-slate-50 px-6 py-24 dark:bg-slate-900/30"
+            className="min-h-screen bg-slate-50 px-4 py-20 sm:px-6 dark:bg-slate-950"
         >
             <div className="mx-auto max-w-7xl">
-                {/* ENCABEZADO Y FILTROS */}
-                <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+
+                {/* ── Header ── */}
+                <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 className="mb-2 text-4xl font-bold text-slate-900 dark:text-white">
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+                            Catálogo
+                        </p>
+                        <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-white">
                             Nuestros Destacados
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-400">
+                        <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
                             Lo más popular entre nuestra comunidad.
                         </p>
                     </div>
 
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                        {/* Buscador */}
-                        <div className="relative">
-                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <Search size={18} className="text-slate-400" />
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Buscar..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="block w-full rounded-full border border-slate-200 bg-white py-2 pr-4 pl-10 text-sm focus:border-blue-500 focus:ring-blue-500 sm:w-64 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400"
-                            />
-                        </div>
-
-                        {/* Tabs */}
-                        <div className="flex space-x-1 rounded-full bg-slate-200/50 p-1 dark:bg-slate-800">
-                            {['all', 'book', 'course'].map((tab) => (
-                                <button
-                                    key={tab}
-                                    onClick={() => handleTabChange(tab)}
-                                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                                        activeTab === tab
-                                            ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
-                                            : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                                    }`}
-                                >
-                                    {tab === 'all'
-                                        ? 'Todos'
-                                        : tab === 'book'
-                                          ? 'Libros'
-                                          : 'Cursos'}
-                                </button>
-                            ))}
-                        </div>
+                    {/* ── Controls ── */}
+                    <div className="flex flex-wrap items-center gap-3">
+                        <SearchInput
+                            value={searchTerm}
+                            onChange={setSearchTerm}
+                            onClear={handleClearSearch}
+                        />
+                        <TabFilter active={activeTab} onChange={handleTabChange} />
                     </div>
                 </div>
 
-                {/* GRID DE PRODUCTOS */}
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {products.data.map((product) => {
-                        const isBook = product.type === 'book';
-                        return (
-                            <div
-                                key={product.id}
-                                className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition-all hover:shadow-2xl dark:border-slate-800 dark:bg-slate-900"
-                            >
-                                <div
-                                    className={`relative h-52 overflow-hidden ${isBook ? 'bg-yellow-50' : 'bg-blue-100'} dark:bg-slate-800`}
-                                >
-                                    <span
-                                        className={`absolute top-4 left-4 z-10 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs font-bold backdrop-blur dark:bg-slate-900/90 ${isBook ? 'text-yellow-600 dark:text-yellow-500' : 'text-blue-600 dark:text-blue-400'}`}
-                                    >
-                                        {isBook ? (
-                                            <BookOpen size={14} />
-                                        ) : (
-                                            <Video size={14} />
-                                        )}
-                                        {isBook ? 'PDF' : 'CURSO'}
-                                    </span>
-                                    {product.thumbnail ? (
-                                        <img
-                                            src={`/storage/${product.thumbnail}`}
-                                            alt={product.title}
-                                            className="h-full w-full object-cover object-[center_30%] transition-transform group-hover:scale-110"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full w-full items-center justify-center text-slate-400">
-                                            Sin portada
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex h-[220px] flex-col p-8">
-                                    <h3 className="mb-2 line-clamp-2 text-xl font-bold dark:text-white">
-                                        {product.title}
-                                    </h3>
-                                    <p className="mb-4 line-clamp-2 flex-grow text-sm text-slate-500 dark:text-slate-400">
-                                        {product.description}
-                                    </p>
-                                    <div className="mt-auto flex items-center justify-between">
-                                        <span className="text-2xl font-black text-slate-900 dark:text-white">
-                                            Bs. {product.price}
-                                        </span>
-                                        <Link
-                                            href={`/productos/${product.id}`}
-                                            className={`rounded-2xl p-3 text-white shadow-lg transition hover:opacity-90 ${brandBg}`}
-                                        >
-                                            <ArrowRight size={20} />
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                {/* ── Results count (when not loading) ── */}
+                {!isLoading && (
+                    <p className="mb-6 text-xs text-slate-400 dark:text-slate-500">
+                        {products.data.length === 0
+                            ? 'Sin resultados'
+                            : `${products.data.length} producto${products.data.length !== 1 ? 's' : ''} encontrado${products.data.length !== 1 ? 's' : ''}`}
+                    </p>
+                )}
+
+                {/* ── Grid ── */}
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+                    {/* Skeletons */}
+                    {isLoading &&
+                        Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                            <SkeletonCard key={i} />
+                        ))}
+
+                    {/* Cards */}
+                    {showProducts &&
+                        products.data.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+
+                    {/* Empty */}
+                    {showEmpty && (
+                        <EmptyState
+                            searchTerm={searchTerm}
+                            onClear={handleClearSearch}
+                        />
+                    )}
                 </div>
 
-                {/* MENSAJE VACÍO */}
-                {products.data.length === 0 && (
-                    <div className="mt-12 text-center text-slate-500">
-                        No se encontraron productos con esos filtros.
-                    </div>
-                )}
-
-                {/* PAGINACIÓN DE INERTIA */}
-                {products.data.length > 0 && products.links.length > 3 && (
-                    <div className="mt-12 flex justify-center">
-                        <div className="flex flex-wrap items-center gap-1">
-                            {products.links.map((link, index) => {
-                                if (link.url === null) {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="mr-1 mb-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-400 dark:border-slate-700 dark:text-slate-600"
-                                            dangerouslySetInnerHTML={{
-                                                __html: link.label,
-                                            }}
-                                        />
-                                    );
-                                }
-                                return (
-                                    <Link
-                                        key={index}
-                                        href={link.url}
-                                        preserveScroll
-                                        preserveState
-                                        className={`mr-1 mb-1 rounded border px-4 py-3 text-sm transition-colors focus:border-blue-500 focus:text-blue-500 ${
-                                            link.active
-                                                ? 'bg-blue-600 text-white dark:border-blue-600'
-                                                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                                        }`}
-                                        dangerouslySetInnerHTML={{
-                                            __html: link.label,
-                                        }}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                {/* ── Pagination ── */}
+                {showProducts && <Pagination links={products.links} />}
             </div>
         </section>
     );
