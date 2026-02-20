@@ -23,7 +23,7 @@ export default function Welcome({
 
     return (
         <div className="min-h-screen bg-white font-['Instrument_Sans'] text-slate-900">
-            <Head title="Educación del Mañana" />
+            <Head title="Aulafutura" />
 
             {/* --- NAVBAR --- */}
             <nav className="fixed top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
@@ -34,11 +34,6 @@ export default function Welcome({
                             alt="Logo"
                             className="h-12 w-auto"
                         />
-                        {/* <span
-                            className={`text-xl font-bold tracking-tight ${brandBlue}`}
-                        >
-                            AulaFutura
-                        </span> */}
                     </div>
 
                     <div className="hidden items-center gap-8 font-medium md:flex">
@@ -96,13 +91,13 @@ export default function Welcome({
             <section className="overflow-hidden bg-gradient-to-b from-blue-50 to-white px-6 pt-32 pb-20">
                 <div className="mx-auto grid max-w-7xl items-center gap-12 md:grid-cols-2">
                     <div className="animate-in space-y-8 duration-1000 fade-in slide-in-from-left">
-                        <h1 className="text-5xl leading-tight font-extrabold md:text-6xl">
+                        <h1 className="font-primary text-5xl leading-tight font-bold md:text-6xl">
                             Formando hoy la{' '}
                             <span className={brandBlue}>
                                 educación del mañana
                             </span>
                         </h1>
-                        <p className="max-w-lg text-lg text-slate-600">
+                        <p className="max-w-lg font-base text-lg font-light text-slate-600">
                             Material educativo diseñado para despertar la
                             curiosidad de los más pequeños. Cursos interactivos
                             y libros digitales creados por expertos.
@@ -130,7 +125,7 @@ export default function Welcome({
             {/* --- SECCIÓN BENEFICIOS --- */}
             <section id="beneficios" className="px-6 py-24">
                 <div className="mx-auto mb-16 max-w-7xl text-center">
-                    <h2 className="mb-4 text-3xl font-bold">
+                    <h2 className="mb-4 font-primary text-2xl font-semibold">
                         ¿Por qué elegirnos?
                     </h2>
                     <div className="mx-auto h-1.5 w-20 rounded-full bg-blue-500"></div>
