@@ -74,8 +74,7 @@ export default function Welcome({
                                     href={login()}
                                     className="flex flex-row items-center gap-1 font-medium text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
                                 >
-                                    Entrar
-                                    <LogIn size={18} />
+                                    Log in
                                 </Link>
                             </>
                         )}
