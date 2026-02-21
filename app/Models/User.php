@@ -23,7 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
-        'is_active'
+        'is_active',
+        'avatar'
     ];
 
     // protected $guarded = ['role_id'];

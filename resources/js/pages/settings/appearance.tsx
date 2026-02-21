@@ -21,7 +21,7 @@ export default function Appearance() {
             <h1 className="sr-only">Appearance Settings</h1>
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 mx-auto text-center">
                     <Heading
                         variant="small"
                         title="Appearance settings"

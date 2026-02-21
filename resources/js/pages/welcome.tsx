@@ -11,12 +11,14 @@ import {
 } from 'lucide-react';
 import { dashboard, login, register } from '@/routes';
 
+import Catalog from '@/Components/Catalog';
+
 export default function Welcome({
     canRegister = true,
 }: {
     canRegister?: boolean;
 }) {
-    const { auth } = usePage().props;
+    const { auth, products, filters } = usePage().props;
 
     // Colores del logo para reutilizar
     const brandBlue = 'text-[#1D4ED8] dark:text-blue-500';
@@ -72,8 +74,7 @@ export default function Welcome({
                                     href={login()}
                                     className="flex flex-row items-center gap-1 font-medium text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
                                 >
-                                    Entrar
-                                    <LogIn size={18} />
+                                    Log in
                                 </Link>
                             </>
                         )}
@@ -163,6 +164,11 @@ export default function Welcome({
             </section>
 
             {/* --- SECCIÓN DESTACADOS (Libros/Cursos) --- */}
+            {products ? (
+                <Catalog products={products} filters={filters} />
+            ) : (
+                <div className="py-24 text-center">Cargando catálogo...</div>
+            )}
             <section
                 id="catalogo"
                 className="bg-slate-50 px-6 py-24 dark:bg-slate-900/30"
