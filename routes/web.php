@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -10,6 +11,9 @@ use App\Http\Controllers\CatalogController;
 
 Route::get('/courses', [CatalogController::class, 'index'])
     ->name('catalog.courses');
+
+Route::get('/books', [CatalogController::class, 'index'])
+    ->name('products.books');
 
 Route::get('/', function (Request $request) {
     // 1. Obtenemos los filtros de la URL
@@ -41,9 +45,19 @@ Route::get('/', function (Request $request) {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('dashboard');
+    })->name('dashboard');
+    Route::get('/books',             [BookController::class, 'index'])->name('books.index');
+    Route::post('/books',            [BookController::class, 'store'])->name('books.store');
+    Route::get('/books/{book}',      [BookController::class, 'show'])->name('books.show');
+    Route::post('/books/{book}',     [BookController::class, 'update'])->name('books.update');
+    Route::delete('/books/{book}',   [BookController::class, 'destroy'])->name('books.destroy');
+    Route::get('/books/{book}/preview', [BookController::class, 'preview'])
+        ->name('books.preview');
+});
 
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');
