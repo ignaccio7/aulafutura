@@ -12,7 +12,7 @@ import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import type { BreadcrumbItem } from '@/types';
-import AvatarEditor from './avatar';
+
 import { ChangeEvent, useRef, useState } from 'react';
 
 /* Avatar */
