@@ -27,14 +27,14 @@ export default function Password() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Password settings" />
 
-            <h1 className="sr-only">Password Settings</h1>
+            <h1 className="sr-only">Configuración de clave de inicio de sesión</h1>
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <div className="space-y-6 mx-auto text-center">
                     <Heading
                         variant="small"
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure"
+                        title="CONTRASEÑA"
+                        
                     />
 
                     <Form
@@ -63,7 +63,7 @@ export default function Password() {
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="current_password">
-                                        Current password
+                                        Contraseña actual
                                     </Label>
 
                                     <Input
@@ -73,7 +73,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
+                                        placeholder="Ingrese su actual contraseña"
                                     />
 
                                     <InputError
@@ -83,7 +83,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        New password
+                                        Nueva contraseña
                                     </Label>
 
                                     <Input
@@ -93,7 +93,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
+                                        placeholder="Ingrese su nueva contraseña"
                                     />
 
                                     <InputError message={errors.password} />
@@ -101,7 +101,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Confirm password
+                                        Confirmar contraseña
                                     </Label>
 
                                     <Input
@@ -110,7 +110,7 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
+                                        placeholder="Confirme su nueva contraseña"
                                     />
 
                                     <InputError
@@ -123,7 +123,7 @@ export default function Password() {
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >
-                                        Save password
+                                        GUARDAR
                                     </Button>
 
                                     <Transition
