@@ -15,7 +15,7 @@ Route::get('/cursos', [CatalogController::class, 'index'])
 Route::get('/books', [CatalogController::class, 'index'])
     ->name('products.books');
 
-Route::get('/', function (Request $request) {
+Route::get('/recursos', function (Request $request) {
     // 1. Obtenemos los filtros de la URL
     $search = $request->input('search');
     $type = $request->input('type', 'all');
@@ -33,15 +33,27 @@ Route::get('/', function (Request $request) {
 
     // 4. Paginamos los resultados
     $products = $query->latest()->paginate(6)->withQueryString();
-
-    // 5. Retornamos la vista 'welcome' (la Landing Page) con todos los datos combinados
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()), // Lo que tenías antes
+    return Inertia::render('resources', [
         'products' => $products, // Los productos paginados
         'filters' => [           // Los filtros actuales para React
             'search' => $search,
             'type' => $type
         ]
+    ]);
+});
+
+Route::get('/suscripciones', function () {
+    return Inertia::render('subscriptions');
+});
+
+Route::get('/libro/chips-y-el-largo-camino-a-primavera', function () {
+    return Inertia::render('detalle');
+});
+
+Route::get('/', function (Request $request) {
+    // 5. Retornamos la vista 'welcome' (la Landing Page) con todos los datos combinados
+    return Inertia::render('welcome', [
+        'canRegister' => Features::enabled(Features::registration())
     ]);
 })->name('home');
 

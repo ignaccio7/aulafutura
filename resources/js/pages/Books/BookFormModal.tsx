@@ -102,7 +102,7 @@ export default function BookFormModal({
         }`;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="backdrop-blur-sxl fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 backdrop-blur-sm"
@@ -110,7 +110,7 @@ export default function BookFormModal({
             />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-xl rounded-2xl border border-gray-200 shadow-2xl">
+            <div className="relative z-10 w-full max-w-xl rounded-2xl border border-gray-200 bg-white shadow-2xl">
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <div className="flex items-center gap-2">
@@ -180,7 +180,7 @@ export default function BookFormModal({
                                     <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <span className="absolute top-1/2 left-3 -translate-y-1/2 text-sm ">
+                                    <span className="absolute top-1/2 left-3 -translate-y-1/2 text-sm">
                                         $
                                     </span>
                                     <input

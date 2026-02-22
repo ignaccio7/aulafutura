@@ -1,3 +1,4 @@
+import { dashboard, login, register } from '@/routes';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
@@ -9,7 +10,6 @@ import {
     ArrowRight,
     LogIn,
 } from 'lucide-react';
-import { dashboard, login, register } from '@/routes';
 
 import Catalog from '@/components/Catalog';
 import { NavBar } from '@/components/nav-bar';
@@ -116,14 +116,7 @@ export default function Welcome({
                     </div>
                 </section>
 
-                {/* --- SECCIÓN DESTACADOS (Libros/Cursos) --- */}
-                {products ? (
-                    <Catalog products={products} filters={filters} />
-                ) : (
-                    <div className="py-24 text-center">
-                        Cargando catálogo...
-                    </div>
-                )}
+                {/* LIBROS DESTACADOS */}
                 <section
                     id="catalogo"
                     className="bg-slate-50 px-6 py-24 dark:bg-slate-900/30"
@@ -139,9 +132,12 @@ export default function Welcome({
                                     padres.
                                 </p>
                             </div>
-                            <button className="flex items-center gap-1 font-bold text-blue-600 hover:underline dark:text-blue-400">
+                            <Link
+                                href={'/recursos'}
+                                className="flex items-center gap-1 font-bold text-blue-600 hover:underline dark:text-blue-400"
+                            >
                                 Ver todo el catálogo
-                            </button>
+                            </Link>
                         </div>
 
                         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -178,11 +174,14 @@ export default function Welcome({
                                         <span className="text-2xl font-black text-slate-900 dark:text-white">
                                             S/ 29.99
                                         </span>
-                                        <button
-                                            className={`rounded-2xl p-3 text-white shadow-lg transition hover:opacity-90 ${brandBg}`}
+                                        <Link
+                                            href={
+                                                '/libro/chips-y-el-largo-camino-a-primavera'
+                                            }
+                                            className={`rounded-2xl bg-primary-500 p-3 text-white shadow-lg transition hover:opacity-90`}
                                         >
                                             <ArrowRight size={20} />
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -214,7 +213,7 @@ export default function Welcome({
                                             S/ 15.00
                                         </span>
                                         <button
-                                            className={`rounded-2xl p-3 text-white shadow-lg transition hover:opacity-90 ${brandBg}`}
+                                            className={`rounded-2xl bg-primary-500 p-3 text-white shadow-lg transition hover:opacity-90`}
                                         >
                                             <ArrowRight size={20} />
                                         </button>

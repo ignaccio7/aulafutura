@@ -58,7 +58,7 @@ export default function BookViewModal({ bookId, onClose, categories }: Props) {
                     onClick={onClose}
                 />
 
-                <div className="relative z-10 w-full max-w-lg rounded-2xl border border-gray-200 shadow-2xl">
+                <div className="relative z-10 w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-2xl">
                     {/* Header */}
                     <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                         <div className="flex items-center gap-2">
