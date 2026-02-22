@@ -9,7 +9,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\CatalogController;
 
-Route::get('/courses', [CatalogController::class, 'index'])
+Route::get('/cursos', [CatalogController::class, 'index'])
     ->name('catalog.courses');
 
 Route::get('/books', [CatalogController::class, 'index'])

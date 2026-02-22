@@ -1,3 +1,4 @@
+import PublicLayout from '@/layouts/public-layout';
 import { router, usePage } from '@inertiajs/react';
 import {
     Video,
@@ -259,25 +260,9 @@ export default function Courses() {
     const hasFilters = filters.category !== null;
 
     return (
-        <div className="min-h-screen bg-white font-['Instrument_Sans'] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-            {/* Navbar */}
-            <nav className="fixed top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80">
-                <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-                    <a href="/">
-                        <img
-                            src="/logo.png"
-                            alt="Logo"
-                            className="h-12 w-auto dark:brightness-110"
-                        />
-                    </a>
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                        Catálogo de Cursos
-                    </span>
-                </div>
-            </nav>
-
+        <PublicLayout title="Cursos">
             {/* Hero sección */}
-            <section className="bg-gradient-to-b from-blue-50 to-white px-6 pt-32 pb-16 dark:from-slate-900 dark:to-slate-950">
+            <section className="bg-gradient-to-b from-blue-50 to-white px-6 pt-12 pb-16 dark:from-slate-900 dark:to-slate-950">
                 <div className="mx-auto max-w-7xl">
                     <h1 className="mb-2 font-primary text-4xl font-bold md:text-5xl">
                         Cursos Grabados
@@ -332,6 +317,6 @@ export default function Courses() {
                     <Pagination links={products.links} />
                 </div>
             </section>
-        </div>
+        </PublicLayout>
     );
 }

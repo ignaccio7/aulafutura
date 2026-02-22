@@ -28,4 +28,10 @@ class Product extends Model
     {
         return $this->hasOne(BookFile::class);
     }
+
+    // Relación 1 a 1 con courses
+    public function course()
+    {
+        return $this->hasOne(Course::class);
+    }
 }
