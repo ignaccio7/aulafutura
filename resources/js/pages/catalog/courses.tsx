@@ -3,7 +3,7 @@ import {
     Video,
     Clock,
     BookOpen,
-    ArrowRight,
+    ArrowUpRight,
     SlidersHorizontal,
 } from 'lucide-react';
 
@@ -32,6 +32,7 @@ interface Product {
     price: number;
     category: Category;
     course: Course;
+    description: string | null;
 }
 
 interface PaginationLink {
@@ -81,18 +82,16 @@ function CourseCard({ product }: { product: Product }) {
     const duration = product.course?.total_duration ?? null;
 
     return (
-        <div className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition-all hover:shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+        <div
+            className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-500 hover:shadow-xl"
+            onClick={() => router.visit(`/courses/${product.id}`)}
+        >
             {/* Thumbnail */}
-            <div className="relative h-52 overflow-hidden bg-blue-100 dark:bg-slate-800">
-                {/* Badge tipo */}
-                <span className="absolute top-4 left-4 z-10 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs font-bold backdrop-blur dark:bg-slate-900/90 dark:text-blue-400">
-                    <Video
-                        size={14}
-                        className="text-[#1D4ED8] dark:text-blue-400"
-                    />
+            <div className="relative h-40 overflow-hidden bg-slate-700">
+                <span className="absolute top-3 left-3 z-10 flex items-center gap-1 rounded-full bg-slate-900/80 px-3 py-1 text-xs font-bold text-blue-400 backdrop-blur">
+                    <Video size={12} className="text-blue-400" />
                     CURSO
                 </span>
-
                 {product.thumbnail ? (
                     <img
                         src={product.thumbnail}
@@ -100,48 +99,41 @@ function CourseCard({ product }: { product: Product }) {
                         className="h-full w-full object-cover transition-transform group-hover:scale-110"
                     />
                 ) : (
-                    /* Placeholder cuando no hay thumbnail */
                     <div className="flex h-full w-full items-center justify-center">
-                        <BookOpen
-                            size={48}
-                            className="text-blue-200 dark:text-slate-600"
-                        />
+                        <Video size={40} className="text-slate-600" />
                     </div>
                 )}
             </div>
 
             {/* Contenido */}
-            <div className="p-8">
-                {/* Categoría */}
-                <span className="mb-2 inline-block text-xs font-semibold tracking-wide text-[#1D4ED8] uppercase dark:text-blue-400">
-                    {product.category?.name ?? 'Sin categoría'}
-                </span>
-
-                {/* Título */}
-                <h3 className="mb-4 line-clamp-2 text-xl leading-snug font-bold text-slate-900 dark:text-white">
+            <div className="p-5">
+                <h3 className="mb-1 text-base leading-snug font-bold text-white">
                     {product.title}
                 </h3>
 
-                {/* Métricas */}
-                <div className="mb-6 flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                    <span className="flex items-center gap-1">
-                        <Clock size={14} />
-                        {formatDuration(duration)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                        <BookOpen size={14} />
-                        {lessonCount}{' '}
-                        {lessonCount === 1 ? 'lección' : 'lecciones'}
-                    </span>
-                </div>
+                {product.description && (
+                    <p className="mb-3 line-clamp-2 text-sm text-slate-400">
+                        {product.description}
+                    </p>
+                )}
 
-                {/* Precio + CTA */}
-                <div className="flex items-center justify-between">
-                    <span className="text-2xl font-black text-slate-900 dark:text-white">
-                        {formatPrice(product.price)}
-                    </span>
-                    <button className="rounded-2xl bg-[#1D4ED8] p-3 text-white shadow-lg transition hover:opacity-90 dark:bg-blue-600">
-                        <ArrowRight size={20} />
+                <div className="mt-4 flex items-center justify-between">
+                    <div>
+                        <p className="text-xs tracking-wide text-slate-500 uppercase">
+                            Precio
+                        </p>
+                        <p className="text-xl font-black text-white">
+                            {formatPrice(product.price)}
+                        </p>
+                    </div>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            router.visit(`/courses/${product.id}`);
+                        }}
+                        className="rounded-xl bg-blue-600 p-3 text-white shadow-lg transition hover:bg-blue-500"
+                    >
+                        <ArrowUpRight size={18} />
                     </button>
                 </div>
             </div>
@@ -315,7 +307,7 @@ export default function Courses() {
                     </div>
 
                     {/* Grid */}
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {courseList.length === 0 ? (
                             <EmptyState hasFilters={hasFilters} />
                         ) : (

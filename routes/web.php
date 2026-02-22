@@ -8,8 +8,8 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\CatalogController;
 
-Route::get('/courses', [CatalogController::class, 'index'])
-    ->name('catalog.courses');
+Route::get('/courses', [CatalogController::class, 'index'])->name('catalog.courses');
+Route::get('/courses/{id}', [CatalogController::class, 'show'])->name('catalog.courses.show');
 
 Route::get('/', function (Request $request) {
     // 1. Obtenemos los filtros de la URL
