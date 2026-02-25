@@ -1,5 +1,12 @@
 import { router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Clock, BookOpen, Play, CheckCircle } from 'lucide-react';
+import {
+    ArrowLeft,
+    Clock,
+    BookOpen,
+    Play,
+    CheckCircle,
+    Lock,
+} from 'lucide-react';
 
 // ─── Tipos ───────────
 
@@ -65,11 +72,13 @@ function LessonRow({ lesson, index }: { lesson: Lesson; index: number }) {
                     {isPreview ? (
                         <Play size={14} className="text-[#1D4ED8]" />
                     ) : (
-                        lesson.order_number
+                        <Lock size={14} className="text-slate-400" />
                     )}
                 </span>
                 <div>
-                    <p className="font-medium text-slate-800 dark:text-white">
+                    <p
+                        className={`font-medium ${isPreview ? 'text-slate-800 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}
+                    >
                         {lesson.title}
                     </p>
                     {isPreview && (
@@ -79,10 +88,17 @@ function LessonRow({ lesson, index }: { lesson: Lesson; index: number }) {
                     )}
                 </div>
             </div>
-            <span className="flex items-center gap-1 text-sm text-slate-400">
-                <Clock size={13} />
-                {formatDuration(lesson.duration)}
-            </span>
+            <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1 text-sm text-slate-400">
+                    <Clock size={13} />
+                    {formatDuration(lesson.duration)}
+                </span>
+                {!isPreview && (
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-400 dark:bg-slate-800">
+                        Bloqueado
+                    </span>
+                )}
+            </div>
         </div>
     );
 }

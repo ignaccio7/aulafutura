@@ -10,156 +10,95 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $frontendCat = Category::where('name', 'Desarrollo Frontend')->first();
-        $sistemasCat = Category::where('name', 'Ingeniería de Sistemas')->first();
-        $qaCat = Category::where('name', 'QA y Automatización')->first();
+        // Obtenemos las nuevas categorías
+        $literaturaCat = Category::where('name', 'Literatura Clásica')->first();
+        $escolarCat = Category::where('name', 'Educación Escolar')->first();
+        $videoCat = Category::where('name', 'Cursos en Video')->first();
 
         /*
         |--------------------------------------------------------------------------
-        | PRODUCTOS EXISTENTES MEJORADOS
+        | 11 LIBROS (Literatura y Escolares)
         |--------------------------------------------------------------------------
         */
 
-        $book1 = Product::create([
-            'category_id' => $frontendCat->id,
-            'title' => 'Dominando Astro y React para Portafolios',
-            'description' => 'Aprende a construir sitios estáticos ultrarrápidos, optimizar SEO y crear componentes interactivos modernos con Astro y React.',
-            'price' => 25.50,
-            'type' => 'book',
-            'thumbnail' => 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4',
-            'is_active' => true,
-        ]);
-
-        $book1->bookFile()->create([
-            'file_path' => 'books/dummy_astro_react.pdf',
-        ]);
-
-        $book2 = Product::create([
-            'category_id' => $sistemasCat->id,
-            'title' => 'Arquitectura de Sistemas para Entornos de Salud',
-            'description' => 'Guía completa sobre diseño de arquitecturas escalables, microservicios y buenas prácticas en sistemas críticos.',
-            'price' => 30.00,
-            'type' => 'book',
-            'thumbnail' => 'https://images.unsplash.com/photo-1581092919535-7146ff1b7c0b',
-            'is_active' => true,
-        ]);
-
-        $book2->bookFile()->create([
-            'file_path' => 'books/dummy_arquitectura_sistemas.pdf',
-        ]);
-
-        Product::create([
-            'category_id' => $qaCat->id,
-            'title' => 'Testing E2E con Playwright y Selenium',
-            'description' => 'Curso completo para dominar pruebas automatizadas en aplicaciones modernas.',
-            'price' => 89.99,
-            'type' => 'course',
-            'thumbnail' => 'https://images.unsplash.com/photo-1581091012184-5c7f9a6a5f90',
-            'is_active' => true,
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | 15 PRODUCTOS EDUCATIVOS DE COLEGIO
-        |--------------------------------------------------------------------------
-        */
-
-        $schoolProducts = [
+        $books = [
+            // Literatura
             [
+                'category_id' => $literaturaCat->id,
+                'title' => 'Don Quijote de la Mancha',
+                'description' => 'La novela cumbre de la literatura española, escrita por Miguel de Cervantes.',
+                'price' => 25.00,
+                'thumbnail' => 'https://picsum.photos/seed/quijote/400/600',
+            ],
+            [
+                'category_id' => $literaturaCat->id,
+                'title' => 'Cuentos de los Hermanos Grimm',
+                'description' => 'Colección de cuentos de hadas clásicos que han pasado de generación en generación.',
+                'price' => 18.20,
+                'thumbnail' => 'https://picsum.photos/seed/grimm/400/600',
+            ],
+            [
+                'category_id' => $literaturaCat->id,
+                'title' => 'Cien Años de Soledad',
+                'description' => 'Obra maestra de Gabriel García Márquez y referente del realismo mágico.',
+                'price' => 22.90,
+                'thumbnail' => 'https://picsum.photos/seed/macondo/400/600',
+            ],
+            // Escolares
+            [
+                'category_id' => $escolarCat->id,
                 'title' => 'Matemática Básica para Secundaria',
-                'description' => 'Álgebra, fracciones, ecuaciones y problemas prácticos paso a paso.',
+                'description' => 'Aritmética, geometría básica y problemas prácticos paso a paso.',
                 'price' => 18.00,
-                'thumbnail' => 'https://images.unsplash.com/photo-1509228468518-180dd4864904',
+                'thumbnail' => 'https://picsum.photos/seed/mate/400/600',
             ],
             [
-                'title' => 'Curso Completo de Física Escolar',
-                'description' => 'Movimiento, leyes de Newton, energía y ejercicios resueltos.',
-                'price' => 22.50,
-                'thumbnail' => 'https://images.unsplash.com/photo-1532094349884-543bc11b234d',
-            ],
-            [
-                'title' => 'Química General para Bachillerato',
-                'description' => 'Tabla periódica, enlaces químicos y reacciones básicas.',
-                'price' => 21.00,
-                'thumbnail' => 'https://images.unsplash.com/photo-1581093588401-16ec7c2f3c3a',
-            ],
-            [
-                'title' => 'Biología: El Cuerpo Humano',
-                'description' => 'Sistemas del cuerpo humano y funciones principales.',
-                'price' => 19.90,
-                'thumbnail' => 'https://images.unsplash.com/photo-1530210124550-912dc1381cb8',
-            ],
-            [
+                'category_id' => $escolarCat->id,
                 'title' => 'Historia Universal Ilustrada',
                 'description' => 'Desde las civilizaciones antiguas hasta la era moderna.',
                 'price' => 17.50,
-                'thumbnail' => 'https://images.unsplash.com/photo-1461360370896-922624d12aa1',
+                'thumbnail' => 'https://picsum.photos/seed/historia/400/600',
             ],
             [
+                'category_id' => $escolarCat->id,
                 'title' => 'Geografía del Mundo',
                 'description' => 'Continentes, países, mapas políticos y físicos.',
                 'price' => 16.80,
-                'thumbnail' => 'https://images.unsplash.com/photo-1524661135-423995f22d0b',
+                'thumbnail' => 'https://picsum.photos/seed/geografia/400/600',
             ],
             [
+                'category_id' => $escolarCat->id,
                 'title' => 'Lenguaje y Literatura',
-                'description' => 'Análisis literario, gramática y redacción.',
+                'description' => 'Análisis literario, gramática y redacción para colegio.',
                 'price' => 20.00,
-                'thumbnail' => 'https://images.unsplash.com/photo-1519681393784-d120267933ba',
+                'thumbnail' => 'https://picsum.photos/seed/lenguaje/400/600',
             ],
             [
-                'title' => 'Inglés Básico para Estudiantes',
-                'description' => 'Gramática esencial, vocabulario y ejercicios prácticos.',
-                'price' => 15.00,
-                'thumbnail' => 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f',
+                'category_id' => $escolarCat->id,
+                'title' => 'Biología: El Cuerpo Humano',
+                'description' => 'Sistemas del cuerpo humano, células y funciones principales.',
+                'price' => 19.90,
+                'thumbnail' => 'https://picsum.photos/seed/biologia/400/600',
             ],
             [
-                'title' => 'Educación Financiera Escolar',
-                'description' => 'Ahorro, presupuesto y conceptos básicos de economía.',
-                'price' => 14.90,
-                'thumbnail' => 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c',
+                'category_id' => $escolarCat->id,
+                'title' => 'Química General para Bachillerato',
+                'description' => 'Tabla periódica, enlaces químicos y reacciones básicas.',
+                'price' => 21.00,
+                'thumbnail' => 'https://picsum.photos/seed/quimica/400/600',
             ],
             [
-                'title' => 'Programación Básica para Jóvenes',
-                'description' => 'Introducción a la lógica y fundamentos de programación.',
-                'price' => 24.99,
-                'thumbnail' => 'https://images.unsplash.com/photo-1518770660439-4636190af475',
-            ],
-            [
-                'title' => 'Arte y Dibujo Creativo',
-                'description' => 'Técnicas básicas de dibujo y creatividad artística.',
-                'price' => 13.50,
-                'thumbnail' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-            ],
-            [
-                'title' => 'Educación Cívica y Ciudadanía',
-                'description' => 'Valores, derechos y deberes ciudadanos.',
-                'price' => 12.00,
-                'thumbnail' => 'https://images.unsplash.com/photo-1529070538774-1843cb3265df',
-            ],
-            [
-                'title' => 'Taller de Redacción Escolar',
-                'description' => 'Cómo escribir ensayos, informes y textos académicos.',
-                'price' => 14.75,
-                'thumbnail' => 'https://images.unsplash.com/photo-1455390582262-044cdead277a',
-            ],
-            [
-                'title' => 'Curso de Robótica Escolar',
-                'description' => 'Introducción a sensores, motores y programación básica.',
-                'price' => 39.99,
-                'thumbnail' => 'https://images.unsplash.com/photo-1581090700227-4c4f50b3e3f5',
-            ],
-            [
-                'title' => 'Preparación para Exámenes Finales',
-                'description' => 'Guía práctica con resúmenes y simulacros de examen.',
-                'price' => 27.00,
-                'thumbnail' => 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b',
+                'category_id' => $escolarCat->id,
+                'title' => 'Física Escolar Práctica',
+                'description' => 'Movimiento, leyes de Newton, energía y ejercicios resueltos.',
+                'price' => 22.50,
+                'thumbnail' => 'https://picsum.photos/seed/fisica/400/600',
             ],
         ];
 
-        foreach ($schoolProducts as $item) {
+        foreach ($books as $item) {
             $book = Product::create([
-                'category_id' => $sistemasCat->id,
+                'category_id' => $item['category_id'],
                 'title' => $item['title'],
                 'description' => $item['description'],
                 'price' => $item['price'],
@@ -168,8 +107,53 @@ class ProductSeeder extends Seeder
                 'is_active' => true,
             ]);
 
+            // Se asocia el archivo del libro
             $book->bookFile()->create([
-                'file_path' => 'books/dummy_school_content.pdf',
+                'file_path' => 'books/dummy_book_content.pdf',
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3 VIDEOS / CURSOS
+        |--------------------------------------------------------------------------
+        */
+
+        $videos = [
+            [
+                'title' => 'Curso Completo de Álgebra',
+                'description' => 'Aprende álgebra desde cero. Ecuaciones, inecuaciones, funciones y gráficas explicadas paso a paso en video.',
+                'price' => 35.00,
+                'thumbnail' => 'https://picsum.photos/seed/algebra/400/600',
+            ],
+            [
+                'title' => 'Dominando la Factorización',
+                'description' => 'Curso especializado en todos los casos de factorización con ejemplos prácticos y ejercicios resueltos en pizarra.',
+                'price' => 28.50,
+                'thumbnail' => 'https://picsum.photos/seed/factorizacion/400/600',
+            ],
+            [
+                'title' => 'Taller Práctico de Robótica Escolar',
+                'description' => 'Aprende a ensamblar tus primeros circuitos, usar sensores y dar movimiento a mecanismos básicos.',
+                'price' => 45.99,
+                'thumbnail' => 'https://picsum.photos/seed/robotica/400/600',
+            ],
+        ];
+
+        foreach ($videos as $item) {
+            $video = Product::create([
+                'category_id' => $videoCat->id,
+                'title' => $item['title'],
+                'description' => $item['description'],
+                'price' => $item['price'],
+                'type' => 'course', // Tipo curso/video
+                'thumbnail' => $item['thumbnail'],
+                'is_active' => true,
+            ]);
+
+            // Archivo de material de apoyo para el video (opcional)
+            $video->bookFile()->create([
+                'file_path' => 'courses/dummy_video_material.pdf',
             ]);
         }
     }
