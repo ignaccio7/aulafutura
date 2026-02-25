@@ -59,6 +59,7 @@ Route::get('/', function (Request $request) {
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    // Rutas para los libros
     Route::get('/dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
