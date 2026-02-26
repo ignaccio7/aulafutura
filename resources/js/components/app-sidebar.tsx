@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, LibraryBig } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, LibraryBig, Video } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -26,6 +26,11 @@ const mainNavItems: NavItem[] = [
         title: 'Libros',
         href: '/books',
         icon: LibraryBig,
+    },
+    {
+        title: 'Cursos',
+        href: '/courses-admin',
+        icon: Video,
     },
 ];
 
