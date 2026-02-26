@@ -213,7 +213,7 @@ export default function CourseDetail() {
                             <div className="relative h-48 overflow-hidden bg-blue-100 dark:bg-slate-800">
                                 {product.thumbnail ? (
                                     <img
-                                        src={product.thumbnail}
+                                        src={`/storage/${product.thumbnail}`}
                                         alt={product.title}
                                         className="h-full w-full object-cover"
                                     />
