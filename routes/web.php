@@ -10,9 +10,9 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CourseController;
 
-Route::get('/courses', [CatalogController::class, 'index'])->name('catalog.courses');
+
 Route::get('/courses/{id}', [CatalogController::class, 'show'])->name('catalog.courses.show');
-Route::get('/cursos', [CatalogController::class, 'index'])->name('catalog.cursos');
+
 Route::get('/books', [CatalogController::class, 'index'])
     ->name('products.books');
 
