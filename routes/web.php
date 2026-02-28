@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\CourseController;
 
 
@@ -43,9 +44,16 @@ Route::get('/recursos', function (Request $request) {
     ]);
 });
 
-Route::get('/suscripciones', function () {
-    return Inertia::render('subscriptions');
-});
+Route::get('/payment/{slug}', function ($slug) {
+    return Inertia::render('cardPayment', [
+        'slug' => $slug
+    ]);
+})->name('cardPayment');
+
+/* Rutas para suscripciones */
+Route::get('/suscripciones', [SubscriptionPlanController::class, 'index'])->name('subscriptions.index');
+Route::post('/suscripciones', [SubscriptionPlanController::class, 'store'])->name('subscriptions.store');
+Route::get('/suscripciones/{plan:slug}', [SubscriptionPlanController::class, 'show'])->name('subscriptions.show');
 
 Route::get('/libro/chips-y-el-largo-camino-a-primavera', function () {
     return Inertia::render('detalle');
