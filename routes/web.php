@@ -9,9 +9,10 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\SubscriptionPlanController;
+use App\Http\Controllers\CourseController;
 
-Route::get('/cursos', [CatalogController::class, 'index'])
-    ->name('catalog.courses');
+
+Route::get('/courses/{id}', [CatalogController::class, 'show'])->name('catalog.courses.show');
 
 Route::get('/books', [CatalogController::class, 'index'])
     ->name('products.books');
@@ -78,7 +79,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/books/{book}',   [BookController::class, 'destroy'])->name('books.destroy');
     Route::get('/books/{book}/preview', [BookController::class, 'preview'])
         ->name('books.preview');
+
+        // Rutas para los cursos
+Route::get('/courses-admin',        [CourseController::class, 'index'])->name('courses.index');
+Route::post('/courses-admin',       [CourseController::class, 'store'])->name('courses.store');
+Route::get('/courses-admin/{course}', [CourseController::class, 'show'])->name('courses.show');
+Route::post('/courses-admin/{course}', [CourseController::class, 'update'])->name('courses.update');
+Route::delete('/courses-admin/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
 });
+
 
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');

@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     protected $fillable = [
-        'product_id',
-        'total_duration',
-    ];
+    'product_id',
+    'total_duration',
+    'description',
+    'requirements',
+];
 
     public function product()
     {
