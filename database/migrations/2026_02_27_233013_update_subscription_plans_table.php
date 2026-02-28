@@ -4,11 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class extends Migration 
 {
     public function up(): void
     {
         Schema::table('subscription_plans', function (Blueprint $table) {
+            $table->string('slug')->after('name');
             $table->enum('billing_cycle', [
                 'semanal', 'mensual', 'trimestral',
                 'semestral', 'anual'
@@ -25,6 +26,7 @@ return new class extends Migration
     {
         Schema::table('subscription_plans', function (Blueprint $table) {
             $table->dropColumn([
+                'slug',
                 'billing_cycle',
                 'discount_price',
                 'currency',

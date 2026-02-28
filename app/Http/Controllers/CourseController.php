@@ -26,7 +26,7 @@ class CourseController extends Controller
             ->get(['id', 'name']);
 
         return Inertia::render('Courses/Index', [
-            'courses'    => $courses,
+            'courses' => $courses,
             'categories' => $categories,
         ]);
     }
@@ -34,17 +34,17 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'        => 'required|string|max:200',
-            'description'  => 'nullable|string',
-            'price'        => 'required|numeric|min:0',
-            'category_id'  => 'required|exists:categories,id',
-            'is_active'    => 'boolean',
-            'thumbnail'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'is_active' => 'boolean',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'requirements' => 'nullable|string',
-            'lessons'      => 'nullable|array',
-            'lessons.*.title'       => 'required|string|max:200',
-            'lessons.*.duration'    => 'required|integer|min:1',
-            'lessons.*.order_number'=> 'required|integer|min:1',
+            'lessons' => 'nullable|array',
+            'lessons.*.title' => 'required|string|max:200',
+            'lessons.*.duration' => 'required|integer|min:1',
+            'lessons.*.order_number' => 'required|integer|min:1',
         ]);
 
         $thumbnailPath = null;
@@ -55,30 +55,30 @@ class CourseController extends Controller
 
         DB::transaction(function () use ($validated, $thumbnailPath, $request) {
             $product = Product::create([
-                'title'       => $validated['title'],
+                'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
-                'price'       => $validated['price'],
+                'price' => $validated['price'],
                 'category_id' => $validated['category_id'],
-                'is_active'   => $request->boolean('is_active', true),
-                'type'        => 'course',
-                'thumbnail'   => $thumbnailPath,
+                'is_active' => $request->boolean('is_active', true),
+                'type' => 'course',
+                'thumbnail' => $thumbnailPath,
             ]);
 
-            $lessons  = $validated['lessons'] ?? [];
+            $lessons = $validated['lessons'] ?? [];
             $duration = array_sum(array_column($lessons, 'duration'));
 
             $course = Course::create([
-                'product_id'     => $product->id,
+                'product_id' => $product->id,
                 'total_duration' => $duration,
-                'description'    => $validated['description'] ?? null,
-                'requirements'   => $validated['requirements'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'requirements' => $validated['requirements'] ?? null,
             ]);
 
             foreach ($lessons as $lesson) {
                 Lesson::create([
-                    'course_id'    => $course->id,
-                    'title'        => $lesson['title'],
-                    'duration'     => $lesson['duration'],
+                    'course_id' => $course->id,
+                    'title' => $lesson['title'],
+                    'duration' => $lesson['duration'],
                     'order_number' => $lesson['order_number'],
                 ]);
             }
@@ -96,16 +96,16 @@ class CourseController extends Controller
     public function update(Request $request, Product $course)
     {
         $validated = $request->validate([
-            'title'        => 'required|string|max:200',
-            'description'  => 'nullable|string',
-            'price'        => 'required|numeric|min:0',
-            'category_id'  => 'required|exists:categories,id',
-            'is_active'    => 'boolean',
-            'thumbnail'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'is_active' => 'boolean',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'requirements' => 'nullable|string',
-            'lessons'      => 'nullable|array',
-            'lessons.*.title'        => 'required|string|max:200',
-            'lessons.*.duration'     => 'required|integer|min:1',
+            'lessons' => 'nullable|array',
+            'lessons.*.title' => 'required|string|max:200',
+            'lessons.*.duration' => 'required|integer|min:1',
             'lessons.*.order_number' => 'required|integer|min:1',
         ]);
 
@@ -119,29 +119,29 @@ class CourseController extends Controller
             }
 
             $course->update([
-                'title'       => $validated['title'],
+                'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
-                'price'       => $validated['price'],
+                'price' => $validated['price'],
                 'category_id' => $validated['category_id'],
-                'is_active'   => $request->boolean('is_active', true),
-                'thumbnail'   => $validated['thumbnail'] ?? $course->thumbnail,
+                'is_active' => $request->boolean('is_active', true),
+                'thumbnail' => $validated['thumbnail'] ?? $course->thumbnail,
             ]);
 
-            $lessons  = $validated['lessons'] ?? [];
+            $lessons = $validated['lessons'] ?? [];
             $duration = array_sum(array_column($lessons, 'duration'));
 
             $course->course()->update([
                 'total_duration' => $duration,
-                'description'    => $validated['description'] ?? null,
-                'requirements'   => $validated['requirements'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'requirements' => $validated['requirements'] ?? null,
             ]);
 
             $course->course->lessons()->delete();
             foreach ($lessons as $lesson) {
                 Lesson::create([
-                    'course_id'    => $course->course->id,
-                    'title'        => $lesson['title'],
-                    'duration'     => $lesson['duration'],
+                    'course_id' => $course->course->id,
+                    'title' => $lesson['title'],
+                    'duration' => $lesson['duration'],
                     'order_number' => $lesson['order_number'],
                 ]);
             }
