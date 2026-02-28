@@ -14,7 +14,7 @@ import { edit } from '@/routes/user-password';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Password settings',
+        title: 'Gestión de contraseña',
         href: edit().url,
     },
 ];
@@ -34,7 +34,7 @@ export default function Password() {
                     <Heading
                         variant="small"
                         title="CONTRASEÑA"
-                        
+
                     />
 
                     <Form

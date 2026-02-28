@@ -14,13 +14,14 @@ import { send } from '@/routes/verification';
 import type { BreadcrumbItem } from '@/types';
 
 import { ChangeEvent, useRef, useState } from 'react';
+import { Pencil } from 'lucide-react';
 
 /* Avatar */
 /* import { useForm } from '@inertiajs/react'; */
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile settings',
+        title: 'Gestión del perfil',
         href: edit().url,
     },
 ];
@@ -55,7 +56,7 @@ export default function Profile({mustVerifyEmail, status}: verifyInfo) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile settings" />
+            <Head title="Gestión del perfil" />
 
             <SettingsLayout>
                 <div className="space-y-6 mx-auto text-center" >
@@ -89,7 +90,7 @@ export default function Profile({mustVerifyEmail, status}: verifyInfo) {
                                             onClick={openFilePicker}
                                             className="absolute bottom-0 right-0 rounded-full bg-neutral-800 px-2 py-1 text-xs text-white"
                                         >
-                                            ✎
+                                            <Pencil />
                                         </button>
 
                                         <input
