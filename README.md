@@ -1,3 +1,15 @@
+# Acerca del proyecto
+
+## Requerimientos
+1. Requiero la web para realizar venta de libros en formato pdf. 
+2. Espacio para alojar cursos virtuales grabados.
+3. Dar la posibilidad a los clientes de comprar con tarjetas de crédito y aplicativos de pago.
+4. Posibilidad de que el cliente se suscriba por trimestre, semestre y anual. 
+5. Que la compra del producto se envíe automáticamente al correo del comprador.
+6. Que la página esté vinculada a WhatsApp. 
+7. Que sea una página amigable e intuitiva. 
+8. Que sea una web que llame la atención.
+
 Comandos a ejecutar
 
 Ejecutar las migraciones y los seeders

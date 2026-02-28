@@ -22,10 +22,10 @@ class SubscriptionPlan extends Model
     ];
 
     protected $casts = [
-        'features'       => 'array',
-        'price'          => 'decimal:2',
+        'features' => 'array',
+        'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
-        'is_active'      => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     // Devuelve el precio real (con descuento si existe)
@@ -39,4 +39,10 @@ class SubscriptionPlan extends Model
     {
         return $query->where('is_active', true);
     }
+
+    public function memberships()
+    {
+        return $this->hasMany(Membership::class , 'plan_id');
+    }
+
 }

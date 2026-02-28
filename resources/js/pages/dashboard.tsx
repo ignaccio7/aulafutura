@@ -8,6 +8,15 @@ import { Select } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { ShoppingBag, BookOpen, Rocket, CreditCard, User } from 'lucide-react';
+
+interface Activity {
+    id: number;
+    type: 'subscription' | 'book_purchase' | 'book_published' | 'course_published';
+    user: string;
+    description: string;
+    time: string;
+}
 
 enum FilterValue {
     LAST_30_DAYS = '30d',
@@ -33,7 +42,7 @@ export function FilterButton({ children, active, handleClick, value }: { childre
     )
 }
 
-export default function Dashboard() {
+export default function Dashboard({ revenueData }: { revenueData: { month: string, total: number }[] }) {
 
     const [activeFilter, setActiveFilter] = useState('30d')
 
@@ -130,13 +139,13 @@ export default function Dashboard() {
         ],
     };
 
-    const revenueData = [
-        { month: 'Enero', total: 1200 },
-        { month: 'Febrero', total: 3200 },
-        { month: 'Marzo', total: 5000 },
-        { month: 'Abril', total: 8200 },
-        { month: 'Mayo', total: 10000 },
-    ];
+    // const revenueData = [
+    //     { month: 'Enero', total: 1200 },
+    //     { month: 'Febrero', total: 3200 },
+    //     { month: 'Marzo', total: 5000 },
+    //     { month: 'Abril', total: 8200 },
+    //     { month: 'Mayo', total: 10000 },
+    // ];
 
     const optionRevenue = {
         title: {
@@ -158,7 +167,7 @@ export default function Dashboard() {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: revenueData.map(i => i.month)
+            data: revenueData?.map(i => i.month) || []
         },
         yAxis: {
             type: 'value'
@@ -168,17 +177,39 @@ export default function Dashboard() {
                 name: 'Ingresos',
                 type: 'line',
                 smooth: true,
-                data: revenueData.map(i => i.total),
+                data: revenueData?.map(i => i.total) || [],
                 symbol: 'circle',
                 symbolSize: 10,
                 lineStyle: {
+                    color: '#3b82f6',
                     width: 4
                 },
+                itemStyle: {
+                    color: '#3b82f6'
+                },
                 areaStyle: {
-                    opacity: 0.2
+                    opacity: 0.2,
+                    color: '#3b82f6'
                 }
             }
         ]
+    }
+
+    const activities: Activity[] = [
+        { id: 1, type: 'subscription', user: 'Juan Perez', description: 'se unió al Plan Premium', time: 'hace 5 min' },
+        { id: 2, type: 'book_purchase', user: 'Maria Garcia', description: 'compró el libro "Aprende React"', time: 'hace 15 min' },
+        { id: 3, type: 'book_published', user: 'Tú', description: 'publicaste el libro "Mastering TypeScript"', time: 'hace 1 hora' },
+        { id: 4, type: 'course_published', user: 'Tú', description: 'publicaste el curso "Laravel & Inertia"', time: 'hace 3 horas' },
+        { id: 5, type: 'subscription', user: 'Carlos Ruiz', description: 'se unió al Plan Básico', time: 'hace 5 horas' },
+    ];
+
+    const getIcon = (type: Activity['type']) => {
+        switch (type) {
+            case 'subscription': return <CreditCard className="w-4 h-4 text-blue-500" />;
+            case 'book_purchase': return <ShoppingBag className="w-4 h-4 text-green-500" />;
+            case 'book_published': return <BookOpen className="w-4 h-4 text-purple-500" />;
+            case 'course_published': return <Rocket className="w-4 h-4 text-orange-500" />;
+        }
     }
 
     const [startDate, setStartDate] = useState<Date | null | undefined>(
@@ -240,15 +271,44 @@ export default function Dashboard() {
                             style={{ height: 300 }}
                         />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2">
-                        <ReactEcharts
-                            option={optionMemberShips}
-                            style={{ height: 250 }}
-                        />
-                        <ReactEcharts
-                            option={optionOrders}
-                            style={{ height: 250 }}
-                        />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <ReactEcharts
+                                option={optionMemberShips}
+                                style={{ height: 250 }}
+                            />
+                            <ReactEcharts
+                                option={optionOrders}
+                                style={{ height: 250 }}
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                <section className="history">
+                    <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-sm w-full">
+                        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                            Actividad Reciente
+                        </h3>
+                        <div className="space-y-4">
+                            {activities.map((activity) => (
+                                <div key={activity.id} className="flex gap-4 items-start group">
+                                    <div className="mt-1 w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:scale-110 transition-transform duration-200">
+                                        {getIcon(activity.type)}
+                                    </div>
+                                    <div className="flex-1 border-b border-gray-50 pb-3 group-last:border-0">
+                                        <p className="text-sm text-gray-700">
+                                            <span className="font-bold text-gray-900">{activity.user}</span> {activity.description}
+                                        </p>
+                                        <span className="text-xs text-gray-400 font-medium">{activity.time}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="w-full mt-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors duration-200 rounded-lg">
+                            Ver todo el historial
+                        </button>
                     </div>
                 </section>
             </main>

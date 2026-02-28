@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 // import { register } from '@/routes';
 import { store } from '@/routes/login';
+import subscriptions from '@/routes/subscriptions';
 
 type Props = {
     status?: string;
@@ -74,12 +75,12 @@ export default function Login({ status }: Props) {
                                 {processing && <Spinner />}
                                 Ingresar
                             </Button>
-                            {/* <div className="text-center text-sm text-muted-foreground">
+                            <div className="text-center text-sm text-muted-foreground">
                                 ¿No tienes una cuenta?{' '}
-                                <TextLink href={register().url} tabIndex={6}>
-                                    Registrate ahora
+                                <TextLink href={subscriptions.index().url} tabIndex={6} className='font-medium text-primary-400'>
+                                    Adquiere una suscripción
                                 </TextLink>
-                            </div> */}
+                            </div>
                         </div>
                     </>
                 )}
