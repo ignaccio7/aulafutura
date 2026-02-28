@@ -54,4 +54,9 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class , 'role_id', 'id');
+    }
 }

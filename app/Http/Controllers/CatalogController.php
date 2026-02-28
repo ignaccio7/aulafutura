@@ -7,10 +7,11 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CatalogController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $categoryId = $request->query('category');
 
@@ -22,7 +23,6 @@ class CatalogController extends Controller
                 'course.lessons'
             ]);
 
-        // Filtro por categoría (solo categorías de cursos)
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
@@ -32,15 +32,30 @@ class CatalogController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        // Traer solo categorías de tipo course
         $categories = Category::where('type', 'course')->get();
 
         return Inertia::render('catalog/courses', [
-            'products' => $products,
+            'products'   => $products,
             'categories' => $categories,
-            'filters' => [
+            'filters'    => [
                 'category' => $categoryId,
             ],
         ]);
     }
+
+ public function show(int $id): Response
+{
+    $product = Product::where('type', 'course')
+        ->where('is_active', true)
+        ->with([
+            'category:id,name',
+            'course.lessons',
+        ])
+        ->findOrFail($id);
+
+    return Inertia::render('catalog/CourseDetail', [
+        'product' => $product,
+    ]);
+}
+
 }

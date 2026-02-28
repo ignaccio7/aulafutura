@@ -13,7 +13,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        //
         User::create([
             'name' => 'Administrador',
             'email' => 'admin@example.com',
@@ -43,8 +42,8 @@ class UserSeeder extends Seeder
 
         User::create([
             'name' => 'Carlos García',
-            'email' => 'carlos@example.com',
-            'password' => '12345678',
+            'email' => 'jose@google.com',
+            'password' => '123123123',
             'role_id' => 2,
             'is_active' => true,
             'avatar' => 'https://ui-avatars.com/api/?name=Carlos+García',

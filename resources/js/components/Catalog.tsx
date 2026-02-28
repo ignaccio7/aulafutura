@@ -75,7 +75,7 @@ function ProductCard({ product }: ProductCardProps) {
 
     return (
         <Link
-            href={`/productos/${product.id}`}
+            href={isBook ? `/books/${product.id}` : `/courses/${product.id}`}
             className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
         >
             {/* ── Thumbnail ── */}
