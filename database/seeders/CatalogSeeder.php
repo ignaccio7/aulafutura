@@ -62,9 +62,11 @@ class CatalogSeeder extends Seeder
                 ]);
 
                 $course = Course::create([
-                    'product_id'     => $product->id,
-                    'total_duration' => 0,
-                ]);
+    'product_id'     => $product->id,
+    'total_duration' => 0,
+    'description'    => "Aprende {$courseData['title']} desde cero con ejemplos prácticos y proyectos reales.",
+    'requirements'   => "No se requieren conocimientos previos. Solo ganas de aprender.",
+]);
 
                 $totalDuration = 0;
                 foreach ($courseData['lessons'] as $i => $lessonTitle) {
