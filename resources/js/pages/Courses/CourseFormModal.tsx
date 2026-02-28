@@ -214,7 +214,7 @@ export default function CourseFormModal({
                                 </label>
                                 <div className="relative">
                                     <span className="absolute top-1/2 left-3 -translate-y-1/2 text-sm">
-                                        Bs.
+                                        S/
                                     </span>
                                     <input
                                         type="number"

@@ -289,7 +289,7 @@ export default function CoursesIndex({ courses, categories }: Props) {
                                             lecciones
                                         </td>
                                         <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
-                                            Bs.{' '}
+                                            S/{' '}
                                             {Number(course.price).toFixed(2)}
                                         </td>
                                         <td className="p-3">

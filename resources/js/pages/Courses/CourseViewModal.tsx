@@ -162,7 +162,7 @@ export default function CourseViewModal({
                                             Precio
                                         </div>
                                         <p className="text-base font-bold">
-                                            Bs.{' '}
+                                            S/{' '}
                                             {Number(course.price).toFixed(2)}
                                         </p>
                                     </div>
