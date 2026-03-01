@@ -1,4 +1,4 @@
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login } from '@/routes';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
@@ -11,9 +11,9 @@ import {
     LogIn,
 } from 'lucide-react';
 
+import PublicLayout from '@/layouts/public-layout';
 import Catalog from '@/components/Catalog';
 import { NavBar } from '@/components/nav-bar';
-import PublicLayout from '@/layouts/public-layout';
 
 export default function Welcome({
     canRegister = true,
@@ -40,17 +40,18 @@ export default function Welcome({
                                 </span>
                             </h1>
                             <p className="max-w-lg font-base text-lg font-light text-slate-600 dark:text-slate-400">
-                                Material educativo diseñado para despertar la
-                                curiosidad de los más pequeños. Cursos
-                                interactivos y libros digitales creados por
-                                expertos.
+                                Material educativo diseñado para
+                                despertar la curiosidad de los más
+                                pequeños. Cursos interactivos y libros
+                                digitales creados por expertos.
                             </p>
                             <div className="flex gap-4">
                                 <a
                                     href="#catalogo"
                                     className={`flex items-center gap-2 rounded-full px-8 py-4 font-bold text-white transition-all hover:-translate-y-1 hover:shadow-lg ${brandBg}`}
                                 >
-                                    Ver Catálogo <ArrowRight size={20} />
+                                    Ver Catálogo{' '}
+                                    <ArrowRight size={20} />
                                 </a>
                             </div>
                         </div>
@@ -95,7 +96,9 @@ export default function Welcome({
                             {
                                 title: 'Acceso de por vida',
                                 desc: 'Compra una vez y accede al material cuando quieras.',
-                                icon: <BookOpen className="text-blue-500" />,
+                                icon: (
+                                    <BookOpen className="text-blue-500" />
+                                ),
                             },
                         ].map((b, i) => (
                             <div
@@ -128,8 +131,8 @@ export default function Welcome({
                                     Nuestros Destacados
                                 </h2>
                                 <p className="text-slate-600 dark:text-slate-400">
-                                    Lo más popular entre nuestra comunidad de
-                                    padres.
+                                    Lo más popular entre nuestra
+                                    comunidad de padres.
                                 </p>
                             </div>
                             <Link
@@ -158,7 +161,8 @@ export default function Welcome({
                                 </div>
                                 <div className="p-8">
                                     <h3 className="mb-2 text-xl font-bold dark:text-white">
-                                        Chips y el largo camino a primavera
+                                        Chips y el largo camino a
+                                        primavera
                                     </h3>
                                     <div className="mb-6 flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                                         <span className="flex items-center gap-1">
@@ -206,7 +210,8 @@ export default function Welcome({
                                         Melgarejo
                                     </h3>
                                     <p className="mb-6 text-sm text-slate-500 italic dark:text-slate-400">
-                                        Libro de ejercicios interactivos.
+                                        Libro de ejercicios
+                                        interactivos.
                                     </p>
                                     <div className="flex items-center justify-between">
                                         <span className="text-2xl font-black text-slate-900 dark:text-white">
@@ -232,8 +237,8 @@ export default function Welcome({
                                 Lo que dicen los padres
                             </h2>
                             <p className="text-slate-600 dark:text-slate-400">
-                                Únete a más de 500 familias que confían en
-                                nosotros.
+                                Únete a más de 500 familias que confían
+                                en nosotros.
                             </p>
                         </div>
                         <div className="flex snap-x gap-6 overflow-x-auto pb-8 md:w-2/3">
@@ -252,10 +257,10 @@ export default function Welcome({
                                         ))}
                                     </div>
                                     <p className="mb-6 text-slate-700 italic dark:text-slate-300">
-                                        "El material de AF Educación cambió la
-                                        forma en que mi hijo ve las tareas.
-                                        Ahora pregunta cuándo le toca ver su
-                                        curso."
+                                        "El material de AF Educación
+                                        cambió la forma en que mi hijo
+                                        ve las tareas. Ahora pregunta
+                                        cuándo le toca ver su curso."
                                     </p>
                                     <div className="flex items-center gap-3">
                                         <div className="h-10 w-10 rounded-full bg-blue-200 dark:bg-slate-700"></div>
@@ -359,7 +364,10 @@ export default function Welcome({
                         </div>
                     </div>
                     <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-xs md:flex-row">
-                        <p>© 2026 AulaFutura. Todos los derechos reservados.</p>
+                        <p>
+                            © 2026 AulaFutura. Todos los derechos
+                            reservados.
+                        </p>
                     </div>
                 </footer>
 

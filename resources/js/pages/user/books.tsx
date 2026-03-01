@@ -48,13 +48,13 @@ export default function UserBooks() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {books.map((book) => (
               <div key={book.id} className="group relative overflow-hidden rounded-2xl border bg-card transition-all hover:shadow-xl hover:-translate-y-1">
-                <div className="aspect-[3/4] overflow-hidden bg-muted">
+                <div className="aspect-3/4 overflow-hidden bg-muted">
                   <img
                     src={book.cover}
                     alt={book.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100 flex items-end justify-center p-4">
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100 flex items-end justify-center p-4">
                     <button className="w-full flex items-center justify-center gap-2 bg-white text-black py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                       <Eye className="h-4 w-4" /> Leer ahora
                     </button>

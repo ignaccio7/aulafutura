@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
+// import { register } from '@/routes';
 import { store } from '@/routes/login';
+import subscriptions from '@/routes/subscriptions';
 
 type Props = {
     status?: string;
@@ -15,9 +16,7 @@ type Props = {
     canRegister: boolean;
 };
 
-export default function Login({
-    status,
-}: Props) {
+export default function Login({ status }: Props) {
     return (
         <AuthLayout
             title="Inicia sesión en tu cuenta"
@@ -34,7 +33,9 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Direccion de correo</Label>
+                                <Label htmlFor="email">
+                                    Direccion de correo
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -76,8 +77,8 @@ export default function Login({
                             </Button>
                             <div className="text-center text-sm text-muted-foreground">
                                 ¿No tienes una cuenta?{' '}
-                                <TextLink href={register().url} tabIndex={6}>
-                                    Registrate ahora
+                                <TextLink href={subscriptions.index().url} tabIndex={6} className='font-medium text-primary-400'>
+                                    Adquiere una suscripción
                                 </TextLink>
                             </div>
                         </div>

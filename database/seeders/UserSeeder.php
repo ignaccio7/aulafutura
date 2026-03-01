@@ -15,8 +15,8 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'Administrador',
-            'email' => 'admin@example.com',
-            'password' => '12345678',
+            'email' => 'admin@google.com',
+            'password' => '123123123',
             'role_id' => 1,
             'is_active' => true,
             'avatar' => 'https://ui-avatars.com/api/?name=Administrador',
