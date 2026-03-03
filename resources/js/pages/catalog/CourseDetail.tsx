@@ -6,7 +6,9 @@ import {
     Play,
     CheckCircle,
     Lock,
+    Search,
 } from 'lucide-react';
+import { useState } from 'react';
 
 // ─── Tipos ───────────
 
@@ -109,6 +111,12 @@ export default function CourseDetail() {
     const { product } = usePage<PageProps>().props;
     const course = product.course;
     const lessons = course?.lessons ?? [];
+    const [lessonSearch, setLessonSearch] = useState('');
+    const filteredLessons = lessons
+        .sort((a, b) => a.order_number - b.order_number)
+        .filter((l) =>
+            l.title.toLowerCase().includes(lessonSearch.toLowerCase()),
+        );
     const lessonCount = lessons.length;
 
     return (
@@ -189,19 +197,30 @@ export default function CourseDetail() {
                             <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
                                 Temario
                             </h2>
+                            {/* Buscador */}
+                            <div className="relative mb-4">
+                                <Search
+                                    size={14}
+                                    className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar lección..."
+                                    value={lessonSearch}
+                                    onChange={(e) =>
+                                        setLessonSearch(e.target.value)
+                                    }
+                                    className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-9 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                                />
+                            </div>
                             <div className="space-y-3">
-                                {lessons
-                                    .sort(
-                                        (a, b) =>
-                                            a.order_number - b.order_number,
-                                    )
-                                    .map((lesson, index) => (
-                                        <LessonRow
-                                            key={lesson.id}
-                                            lesson={lesson}
-                                            index={index}
-                                        />
-                                    ))}
+                                {filteredLessons.map((lesson, index) => (
+                                    <LessonRow
+                                        key={lesson.id}
+                                        lesson={lesson}
+                                        index={index}
+                                    />
+                                ))}
                             </div>
                         </div>
                     </div>

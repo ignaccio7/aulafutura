@@ -73,7 +73,7 @@ Route::get('/recursos', function (Request $request) {
     $type = $request->input('type', 'all');
 
     // 2. Construimos la consulta base
-    $query = Product::with('category')->where('is_active', true);
+    $query = Product::with(['category', 'course.lessons'])->where('is_active', true);
 
     // 3. Aplicamos filtros si existen
     if ($type !== 'all') {
