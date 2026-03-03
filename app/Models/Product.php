@@ -1,12 +1,9 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    //
     protected $fillable = [
         'category_id',
         'title',
@@ -28,4 +25,16 @@ class Product extends Model
     {
         return $this->hasOne(BookFile::class);
     }
+
+    // Relación 1 a 1 con course
+    public function course()
+    {
+        return $this->hasOne(Course::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
 }

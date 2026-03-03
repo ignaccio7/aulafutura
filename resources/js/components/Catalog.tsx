@@ -1,5 +1,12 @@
 import { Link, router } from '@inertiajs/react';
-import { ArrowUpRight, BookOpen, PackageOpen, Search, Video, X } from 'lucide-react';
+import {
+    ArrowUpRight,
+    BookOpen,
+    PackageOpen,
+    Search,
+    Video,
+    X,
+} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -68,19 +75,20 @@ function ProductCard({ product }: ProductCardProps) {
 
     return (
         <Link
-            href={`/productos/${product.id}`}
+            href={isBook ? `/books/${product.id}` : `/courses/${product.id}`}
             className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
         >
             {/* ── Thumbnail ── */}
             <div
-                className={`relative h-52 overflow-hidden ${isBook
+                className={`relative h-52 overflow-hidden ${
+                    isBook
                         ? 'bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40'
                         : 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40'
-                    }`}
+                }`}
             >
                 {product.thumbnail ? (
                     <img
-                        src={`/storage/${product.thumbnail}`}
+                        src={getImageUrl(product.thumbnail)}
                         alt={product.title}
                         className="h-full w-full object-cover object-[center_30%] transition-transform duration-500 group-hover:scale-105"
                     />
@@ -105,10 +113,11 @@ function ProductCard({ product }: ProductCardProps) {
 
                 {/* Type badge */}
                 <span
-                    className={`absolute top-3 left-3 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm ${isBook
+                    className={`absolute top-3 left-3 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm ${
+                        isBook
                             ? 'bg-amber-50/90 text-amber-700 ring-1 ring-amber-200/60 dark:bg-amber-950/80 dark:text-amber-400 dark:ring-amber-800/60'
                             : 'bg-blue-50/90 text-blue-700 ring-1 ring-blue-200/60 dark:bg-blue-950/80 dark:text-blue-400 dark:ring-blue-800/60'
-                        }`}
+                    }`}
                 >
                     {isBook ? <BookOpen size={12} /> : <Video size={12} />}
                     {isBook ? 'PDF' : 'CURSO'}
@@ -117,7 +126,7 @@ function ProductCard({ product }: ProductCardProps) {
 
             {/* ── Content ── */}
             <div className="flex flex-1 flex-col p-6">
-                <h3 className="mb-1.5 line-clamp-2 text-base font-bold leading-snug text-slate-900 dark:text-white">
+                <h3 className="mb-1.5 line-clamp-2 text-base leading-snug font-bold text-slate-900 dark:text-white">
                     {product.title}
                 </h3>
 
@@ -128,9 +137,9 @@ function ProductCard({ product }: ProductCardProps) {
                 )}
 
                 {/* ── Footer ── */}
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
                     <div>
-                        <p className="text-[11px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                        <p className="text-[11px] font-medium tracking-widest text-slate-400 uppercase dark:text-slate-500">
                             Precio
                         </p>
                         <p className="text-xl font-black text-slate-900 dark:text-white">
@@ -216,10 +225,11 @@ function Pagination({ links }: PaginationProps) {
                             href={link.url}
                             preserveScroll
                             preserveState
-                            className={`flex h-9 min-w-9 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-150 ${link.active
+                            className={`flex h-9 min-w-9 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-150 ${
+                                link.active
                                     ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/25 dark:border-blue-500 dark:bg-blue-500'
                                     : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                                }`}
+                            }`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     );
@@ -249,7 +259,7 @@ function SearchInput({ value, onChange, onClear }: SearchInputProps) {
                 placeholder="Buscar productos..."
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="block w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-9 pl-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-64 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-400"
+                className="block w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-9 pl-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:w-64 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-400"
             />
             {value && (
                 <button
@@ -284,10 +294,11 @@ function TabFilter({ active, onChange }: TabFilterProps) {
                 <button
                     key={tab.value}
                     onClick={() => onChange(tab.value)}
-                    className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150 ${active === tab.value
+                    className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150 ${
+                        active === tab.value
                             ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
                             : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
-                        }`}
+                    }`}
                 >
                     {tab.label}
                 </button>
@@ -299,6 +310,18 @@ function TabFilter({ active, onChange }: TabFilterProps) {
 // ─── Catalog (Main) ───────────────────────────────────────────────────────────
 
 const SKELETON_COUNT = 6;
+
+function getImageUrl(path?: string | null): string {
+    if (!path) return '/images/placeholder.png';
+
+    // Si ya es una URL externa
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+
+    // Si es archivo almacenado en Laravel storage
+    return `/storage/${path}`;
+}
 
 export default function Catalog({
     products,
@@ -312,7 +335,7 @@ export default function Catalog({
     const applyFilters = (search: string, type: string) => {
         setIsLoading(true);
         router.get(
-            '/',
+            '/recursos',
             { search, type },
             {
                 preserveState: true,
@@ -358,11 +381,10 @@ export default function Catalog({
             className="min-h-screen bg-slate-50 px-4 py-20 sm:px-6 dark:bg-slate-950"
         >
             <div className="mx-auto max-w-7xl">
-
                 {/* ── Header ── */}
                 <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+                        <p className="mb-1 text-xs font-semibold tracking-widest text-blue-600 uppercase dark:text-blue-400">
                             Catálogo
                         </p>
                         <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-white">
@@ -380,7 +402,10 @@ export default function Catalog({
                             onChange={setSearchTerm}
                             onClear={handleClearSearch}
                         />
-                        <TabFilter active={activeTab} onChange={handleTabChange} />
+                        <TabFilter
+                            active={activeTab}
+                            onChange={handleTabChange}
+                        />
                     </div>
                 </div>
 
@@ -395,7 +420,6 @@ export default function Catalog({
 
                 {/* ── Grid ── */}
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-
                     {/* Skeletons */}
                     {isLoading &&
                         Array.from({ length: SKELETON_COUNT }).map((_, i) => (

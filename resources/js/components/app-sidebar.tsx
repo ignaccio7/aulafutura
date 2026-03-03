@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, Folder, LayoutGrid, LibraryBig, Video } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -15,29 +15,68 @@ import {
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 import { dashboard } from '@/routes';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+import admin from '@/routes/admin';
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Repository',
+    //     href: 'https://github.com/laravel/react-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     href: 'https://laravel.com/docs/starter-kits#react',
+    //     icon: BookOpen,
+    // },
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage().props;
+    const role = auth.user.rol;
+
+    const getNavItems = (): NavItem[] => {
+        if (role === 'admin') {
+            return [
+                {
+                    title: 'Dashboard',
+                    href: dashboard().url,
+                    icon: LayoutGrid,
+                },
+                {
+                    title: 'Libros',
+                    href: admin.books.index().url,
+                    icon: LibraryBig,
+                },
+                {
+                    title: 'Cursos',
+                    href: admin.courses.index().url,
+                    icon: Video,
+                },
+            ];
+        } else if (role === 'user') {
+            return [
+                {
+                    title: 'Dashboard',
+                    href: dashboard().url,
+                    icon: LayoutGrid,
+                },
+                {
+                    title: 'Mis Libros',
+                    href: '/user/books',
+                    icon: LibraryBig,
+                },
+                {
+                    title: 'Mis Cursos',
+                    href: '/user/courses',
+                    icon: Video,
+                },
+            ];
+        }
+        return [];
+    };
+
+    const mainNavItems = getNavItems();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
