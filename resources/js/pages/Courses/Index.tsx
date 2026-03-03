@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import {
@@ -9,6 +9,7 @@ import {
     Search,
     Plus,
     Image as ImageIcon,
+    Trash2,
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import CourseFormModal from './CourseFormModal';
@@ -21,6 +22,7 @@ export interface Lesson {
     title: string;
     duration: number;
     order_number: number;
+    video_url?: string;
 }
 
 export interface Category {
@@ -89,7 +91,7 @@ export default function CoursesIndex({ courses, categories }: Props) {
     const [viewCourseId, setViewCourseId] = useState<number | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Cursos', href: '/courses-admin' },
+        { title: 'Cursos', href: '/admin/courses-admin' },
     ];
 
     const handleSort = (field: SortField) => {
@@ -309,15 +311,37 @@ export default function CoursesIndex({ courses, categories }: Props) {
                                             </span>
                                         </td>
                                         <td className="p-3">
-                                            <button
-                                                onClick={() =>
-                                                    setViewCourseId(course.id)
-                                                }
-                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-700"
-                                                title="Ver curso"
-                                            >
-                                                <Eye className="h-4 w-4" />
-                                            </button>
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    onClick={() =>
+                                                        setViewCourseId(
+                                                            course.id,
+                                                        )
+                                                    }
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-700"
+                                                    title="Ver curso"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </button>
+
+                                                <button
+                                                    onClick={() => {
+                                                        if (
+                                                            confirm(
+                                                                '¿Estás seguro de que querés eliminar este curso?',
+                                                            )
+                                                        ) {
+                                                            router.delete(
+                                                                `/admin/courses-admin/${course.id}`,
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-gray-700"
+                                                    title="Eliminar curso"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

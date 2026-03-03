@@ -1,5 +1,12 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, LibraryBig, Video } from 'lucide-react';
+import {
+    BookOpen,
+    Folder,
+    LayoutGrid,
+    LibraryBig,
+    Video,
+    Tag,
+} from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -51,6 +58,11 @@ export function AppSidebar() {
                     title: 'Cursos',
                     href: admin.courses.index().url,
                     icon: Video,
+                },
+                {
+                    title: 'Categorías',
+                    href: '/admin/categories',
+                    icon: Tag,
                 },
             ];
         } else if (role === 'user') {
