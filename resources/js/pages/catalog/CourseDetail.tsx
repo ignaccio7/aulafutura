@@ -22,6 +22,7 @@ interface Lesson {
     title: string;
     duration: number | null;
     order_number: number;
+    video_url: string | null;
 }
 
 interface Course {
@@ -63,12 +64,35 @@ function formatPrice(price: number): string {
 }
 
 // ─── Componentes ────────
+function getEmbedUrl(url: string): string {
+    // YouTube
+    const ytMatch = url.match(
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+    );
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
 
-function LessonRow({ lesson, index }: { lesson: Lesson; index: number }) {
+    // Vimeo
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+
+    return url;
+}
+function LessonRow({
+    lesson,
+    index,
+    onSelect,
+}: {
+    lesson: Lesson;
+    index: number;
+    onSelect: (lesson: Lesson) => void;
+}) {
     const isPreview = index === 0;
 
     return (
-        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-5 py-4 transition hover:border-blue-100 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900/30">
+        <div
+            className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-100 bg-white px-5 py-4 transition hover:border-blue-100 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900/30"
+            onClick={() => onSelect(lesson)}
+        >
             <div className="flex items-center gap-4">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                     {isPreview ? (
@@ -118,6 +142,7 @@ export default function CourseDetail() {
             l.title.toLowerCase().includes(lessonSearch.toLowerCase()),
         );
     const lessonCount = lessons.length;
+    const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
     return (
         <div className="min-h-screen bg-white font-['Instrument_Sans'] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -191,6 +216,32 @@ export default function CourseDetail() {
                                 </div>
                             </div>
                         )}
+                        {/* Reproductor */}
+                        {selectedLesson && selectedLesson.video_url && (
+                            <div className="mb-8">
+                                <div className="overflow-hidden rounded-2xl bg-black shadow-xl">
+                                    <iframe
+                                        src={getEmbedUrl(
+                                            selectedLesson.video_url,
+                                        )}
+                                        className="aspect-video w-full"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                </div>
+                                <div className="mt-3 flex items-center justify-between">
+                                    <p className="font-semibold text-slate-900 dark:text-white">
+                                        {selectedLesson.title}
+                                    </p>
+                                    <button
+                                        onClick={() => setSelectedLesson(null)}
+                                        className="text-sm text-slate-400 hover:text-slate-600"
+                                    >
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Temario */}
                         <div>
@@ -219,6 +270,7 @@ export default function CourseDetail() {
                                         key={lesson.id}
                                         lesson={lesson}
                                         index={index}
+                                        onSelect={setSelectedLesson}
                                     />
                                 ))}
                             </div>
