@@ -45,6 +45,7 @@ class CourseController extends Controller
             'lessons.*.title' => 'required|string|max:200',
             'lessons.*.duration' => 'required|integer|min:1',
             'lessons.*.order_number' => 'required|integer|min:1',
+            'lessons.*.video_url' => 'nullable|string|url',
         ]);
 
         $thumbnailPath = null;
@@ -80,6 +81,7 @@ class CourseController extends Controller
                     'title' => $lesson['title'],
                     'duration' => $lesson['duration'],
                     'order_number' => $lesson['order_number'],
+                    'video_url' => $lesson['video_url'] ?? null,
                 ]);
             }
         });
@@ -107,6 +109,7 @@ class CourseController extends Controller
             'lessons.*.title' => 'required|string|max:200',
             'lessons.*.duration' => 'required|integer|min:1',
             'lessons.*.order_number' => 'required|integer|min:1',
+            'lessons.*.video_url' => 'nullable|string|url',
         ]);
 
         DB::transaction(function () use ($validated, $request, $course) {
@@ -143,6 +146,7 @@ class CourseController extends Controller
                     'title' => $lesson['title'],
                     'duration' => $lesson['duration'],
                     'order_number' => $lesson['order_number'],
+                    'video_url' => $lesson['video_url'] ?? null,
                 ]);
             }
         });

@@ -12,6 +12,7 @@ use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Log;
 
 
@@ -42,6 +43,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/courses-admin/{course}', [CourseController::class , 'show'])->name('courses.show');
     Route::post('/courses-admin/{course}', [CourseController::class , 'update'])->name('courses.update');
     Route::delete('/courses-admin/{course}', [CourseController::class , 'destroy'])->name('courses.destroy');
+
+    // Rutas para categorías
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
 });
 
 // Rutas para el usuario estandar

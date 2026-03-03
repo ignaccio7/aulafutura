@@ -43,7 +43,7 @@ export default function CourseViewModal({
             return;
         }
         setLoading(true);
-        fetch(`/courses-admin/${courseId}`)
+        fetch(`/admin/courses-admin/${courseId}`)
             .then((r) => r.json())
             .then((data) => {
                 setCourse(data);
