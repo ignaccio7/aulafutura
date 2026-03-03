@@ -40,18 +40,15 @@ export default function DeleteUser() {
                             variant="destructive"
                             data-test="delete-user-button"
                         >
-                            Delete account
+                            Eliminar cuenta
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>
-                            Are you sure you want to delete your account?
+                            ¿Estás seguro de eliminar la cuenta?
                         </DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources
-                            and data will also be permanently deleted. Please
-                            enter your password to confirm you would like to
-                            permanently delete your account.
+                            Una vez tu cuenta sea eliminada, toda tu información será también eliminada. Por favor ingrese su contraseña para confirmar la eliminación permanente de la cuenta.
                         </DialogDescription>
 
                         <Form
@@ -106,7 +103,7 @@ export default function DeleteUser() {
                                                 type="submit"
                                                 data-test="confirm-delete-user-button"
                                             >
-                                                Delete account
+                                                Eliminar cuenta
                                             </button>
                                         </Button>
                                     </DialogFooter>

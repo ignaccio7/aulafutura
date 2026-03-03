@@ -43,7 +43,12 @@ export default function CourseFormModal({
         is_active: boolean;
         thumbnail: File | null;
         requirements: string;
-        lessons: { title: string; duration: string; order_number: number }[];
+        lessons: {
+            title: string;
+            duration: string;
+            order_number: number;
+            video_url: string;
+        }[];
     }>({
         title: course?.title ?? '',
         description: course?.description ?? '',
@@ -57,6 +62,7 @@ export default function CourseFormModal({
                 title: l.title,
                 duration: String(l.duration),
                 order_number: l.order_number,
+                video_url: l.video_url ?? '',
             })) ?? [],
     });
 
@@ -75,6 +81,7 @@ export default function CourseFormModal({
                         title: l.title,
                         duration: String(l.duration),
                         order_number: l.order_number,
+                        video_url: l.video_url ?? '',
                     })) ?? [],
             });
         }
@@ -97,7 +104,9 @@ export default function CourseFormModal({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const url = isEdit ? `/courses-admin/${course!.id}` : '/courses-admin';
+        const url = isEdit
+            ? `/admin/courses-admin/${course!.id}`
+            : '/admin/courses-admin';
         post(url, {
             forceFormData: true,
             onSuccess: () => handleClose(),
@@ -108,7 +117,12 @@ export default function CourseFormModal({
     const addLesson = () => {
         setData('lessons', [
             ...data.lessons,
-            { title: '', duration: '', order_number: data.lessons.length + 1 },
+            {
+                title: '',
+                duration: '',
+                order_number: data.lessons.length + 1,
+                video_url: '',
+            },
         ]);
     };
 
@@ -353,7 +367,7 @@ export default function CourseFormModal({
                                 {data.lessons.map((lesson, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
+                                        className="flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
                                     >
                                         <GripVertical className="h-4 w-4 flex-shrink-0 text-gray-300" />
                                         <span className="w-6 text-center text-xs font-bold text-gray-400">
@@ -370,6 +384,20 @@ export default function CourseFormModal({
                                                 )
                                             }
                                             placeholder="Título de la lección"
+                                            className="flex-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-blue-400"
+                                        />
+
+                                        <input
+                                            type="text"
+                                            value={lesson.video_url ?? ''}
+                                            onChange={(e) =>
+                                                updateLesson(
+                                                    index,
+                                                    'video_url',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            placeholder="URL del video"
                                             className="flex-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-blue-400"
                                         />
                                         <div className="flex items-center gap-1">
