@@ -30,6 +30,7 @@ interface Course {
     total_duration: number | null;
     description: string | null;
     requirements: string | null;
+    trailer_url: string | null;
     lessons: Lesson[];
 }
 
@@ -129,13 +130,23 @@ function LessonRow({
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
-                        router.post(
-                            '/user/lesson-progress',
-                            { lesson_id: lesson.id },
-                            {
-                                preserveScroll: true,
+                        fetch('/user/lesson-progress', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN':
+                                    document
+                                        .querySelector(
+                                            'meta[name="csrf-token"]',
+                                        )
+                                        ?.getAttribute('content') ?? '',
                             },
-                        );
+                            body: JSON.stringify({ lesson_id: lesson.id }),
+                        })
+                            .then(() => {
+                                router.reload({ preserveUrl: true });
+                            })
+                            .catch(() => {});
                     }}
                     className={`rounded-full p-1 transition ${completed ? 'text-emerald-500 hover:text-emerald-600' : 'text-slate-300 hover:text-slate-400'}`}
                     title={
@@ -169,6 +180,9 @@ export default function CourseDetail() {
             l.title.toLowerCase().includes(lessonSearch.toLowerCase()),
         );
     const lessonCount = lessons.length;
+    const completedCount = userProgress.length;
+    const progressPercent =
+        lessonCount > 0 ? Math.round((completedCount / lessonCount) * 100) : 0;
     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
     return (
@@ -269,6 +283,29 @@ export default function CourseDetail() {
                                 </div>
                             </div>
                         )}
+                        {/* Barra de progreso */}
+                        {userProgress.length > 0 && (
+                            <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                                <div className="mb-2 flex items-center justify-between text-sm">
+                                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                                        Tu progreso
+                                    </span>
+                                    <span className="font-bold text-emerald-600">
+                                        {progressPercent}%
+                                    </span>
+                                </div>
+                                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                                    <div
+                                        className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                                        style={{ width: `${progressPercent}%` }}
+                                    />
+                                </div>
+                                <p className="mt-2 text-xs text-slate-400">
+                                    {completedCount} de {lessonCount} lecciones
+                                    completadas
+                                </p>
+                            </div>
+                        )}
 
                         {/* Temario */}
                         <div>
@@ -310,9 +347,16 @@ export default function CourseDetail() {
                     {/* Columna derecha — sticky */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-24 overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
-                            {/* Thumbnail / Preview */}
+                            {/* Thumbnail / Trailer */}
                             <div className="relative h-48 overflow-hidden bg-blue-100 dark:bg-slate-800">
-                                {product.thumbnail ? (
+                                {course?.trailer_url ? (
+                                    <iframe
+                                        src={getEmbedUrl(course.trailer_url)}
+                                        className="h-full w-full"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                ) : product.thumbnail ? (
                                     <img
                                         src={`/storage/${product.thumbnail}`}
                                         alt={product.title}
