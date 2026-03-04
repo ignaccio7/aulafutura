@@ -45,6 +45,7 @@ interface Product {
 
 interface PageProps {
     product: Product;
+    userProgress: number[];
     [key: string]: unknown;
 }
 
@@ -81,16 +82,22 @@ function LessonRow({
     lesson,
     index,
     onSelect,
+    completed,
 }: {
     lesson: Lesson;
     index: number;
     onSelect: (lesson: Lesson) => void;
+    completed: boolean;
 }) {
     const isPreview = index === 0;
 
     return (
         <div
-            className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-100 bg-white px-5 py-4 transition hover:border-blue-100 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900/30"
+            className={`flex cursor-pointer items-center justify-between rounded-xl border px-5 py-4 transition-all duration-300 hover:shadow-sm ${
+                completed
+                    ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10'
+                    : 'border-slate-100 bg-white hover:border-blue-100 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900/30'
+            }`}
             onClick={() => onSelect(lesson)}
         >
             <div className="flex items-center gap-4">
@@ -119,6 +126,26 @@ function LessonRow({
                     <Clock size={13} />
                     {formatDuration(lesson.duration)}
                 </span>
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.post(
+                            '/user/lesson-progress',
+                            { lesson_id: lesson.id },
+                            {
+                                preserveScroll: true,
+                            },
+                        );
+                    }}
+                    className={`rounded-full p-1 transition ${completed ? 'text-emerald-500 hover:text-emerald-600' : 'text-slate-300 hover:text-slate-400'}`}
+                    title={
+                        completed
+                            ? 'Marcar como no completada'
+                            : 'Marcar como completada'
+                    }
+                >
+                    <CheckCircle size={18} />
+                </button>
                 {!isPreview && (
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-400 dark:bg-slate-800">
                         Bloqueado
@@ -132,7 +159,7 @@ function LessonRow({
 // ─── Página principal ─────────
 
 export default function CourseDetail() {
-    const { product } = usePage<PageProps>().props;
+    const { product, userProgress } = usePage<PageProps>().props;
     const course = product.course;
     const lessons = course?.lessons ?? [];
     const [lessonSearch, setLessonSearch] = useState('');
@@ -271,6 +298,9 @@ export default function CourseDetail() {
                                         lesson={lesson}
                                         index={index}
                                         onSelect={setSelectedLesson}
+                                        completed={userProgress.includes(
+                                            lesson.id,
+                                        )}
                                     />
                                 ))}
                             </div>

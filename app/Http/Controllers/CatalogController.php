@@ -52,9 +52,19 @@ class CatalogController extends Controller
             'course.lessons',
         ])
         ->findOrFail($id);
+        $userProgress = [];
+    if (auth()->check()) {
+        $lessonIds = $product->course?->lessons->pluck('id') ?? [];
+        $userProgress = \App\Models\LessonProgress::where('user_id', auth()->id())
+            ->whereIn('lesson_id', $lessonIds)
+            ->where('completed', true)
+            ->pluck('lesson_id')
+            ->toArray();
+    }
 
     return Inertia::render('catalog/CourseDetail', [
         'product' => $product,
+        'userProgress' => $userProgress,
     ]);
 }
 
