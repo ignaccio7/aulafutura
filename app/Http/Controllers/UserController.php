@@ -10,7 +10,7 @@ class UserController extends Controller
     {
         return inertia('user/dashboard', [
             'membership' => [
-                'plan' => 'Premium Anual',
+                'plan' => 'Plan lector',
                 'active' => true,
                 'expires_at' => now()->addMonths(10)->format('d M, Y'),
                 'price' => '$199.00',

@@ -143,7 +143,7 @@ function ProductCard({ product }: ProductCardProps) {
                             Precio
                         </p>
                         <p className="text-xl font-black text-slate-900 dark:text-white">
-                            Bs. {product.price}
+                            PEN. {product.price}
                         </p>
                     </div>
 

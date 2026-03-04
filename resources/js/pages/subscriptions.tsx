@@ -11,7 +11,6 @@ import React from 'react';
 import PublicLayout from '@/layouts/public-layout';
 import { cardPayment } from '@/routes';
 
-
 interface Feature {
     text: string;
     icon: string;
@@ -54,13 +53,13 @@ export default function Suscripciones({ plans }: Props) {
                 <Head title="Planes de Suscripción - AulaFutura" />
 
                 {/* --- HEADER --- */}
-                <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white pt-32 pb-16 dark:from-slate-900 dark:to-slate-950">
+                <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white pt-32 pb-10 dark:from-slate-900 dark:to-slate-950">
                     <div className="mx-auto max-w-7xl px-6 text-center">
                         <h1 className="mb-6 text-4xl leading-tight font-bold md:text-5xl lg:text-6xl">
                             Elige el plan ideal para su{' '}
                             <span className={brandText}>crecimiento</span>
                         </h1>
-                        <p className="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-400">
+                        <p className="mx-auto max-w-3xl text-lg text-slate-600 dark:text-slate-400">
                             Invierte en una educación de calidad. Todos nuestros
                             planes incluyen actualizaciones mensuales y
                             contenido seguro para niños.
@@ -71,8 +70,8 @@ export default function Suscripciones({ plans }: Props) {
                 </section>
 
                 {/* --- PLANES --- */}
-                <section className="px-6 py-20">
-                    <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
+                <section className="px-6 pb-20">
+                    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                         {plans.data.map((plan) => (
                             <div
                                 key={plan.id}
@@ -99,14 +98,14 @@ export default function Suscripciones({ plans }: Props) {
                                             {plan.billing_cycle}
                                         </p>
                                         <div className="flex items-baseline justify-end gap-1">
-                                            <span className="text-3xl font-black">
+                                            <span className="text-2xl font-black">
                                                 S/ {plan.effective_price}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <h3 className="mb-4 text-2xl font-bold">
+                                <h3 className="mb-4 text-xl font-bold">
                                     {plan.name}
                                 </h3>
 
@@ -129,21 +128,20 @@ export default function Suscripciones({ plans }: Props) {
                                     ))}
                                 </ul>
 
-
-<Link
-    href={`/payment/${plan.slug}`}
-    className={`group flex items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white transition-all active:scale-95 ${
-        plan.slug === 'plus'
-            ? brandBg
-            : 'bg-slate-800 hover:bg-slate-900 dark:bg-slate-700'
-    }`}
->
-    Seleccionar Plan
-    <ArrowRight
-        size={18}
-        className="transition-transform group-hover:translate-x-1"
-    />
-</Link>
+                                <Link
+                                    href={`/payment/${plan.slug}`}
+                                    className={`group flex items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white transition-all active:scale-95 ${
+                                        plan.slug === 'plus'
+                                            ? brandBg
+                                            : 'bg-slate-800 hover:bg-slate-900 dark:bg-slate-700'
+                                    }`}
+                                >
+                                    Seleccionar Plan
+                                    <ArrowRight
+                                        size={18}
+                                        className="transition-transform group-hover:translate-x-1"
+                                    />
+                                </Link>
                             </div>
                         ))}
                     </div>
