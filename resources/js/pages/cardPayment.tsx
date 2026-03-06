@@ -125,6 +125,7 @@ export default function CheckoutMultiStep() {
                                 </div>
 
                                 <div className="space-y-5">
+                                    
                                     <div>
                                         <label className="mb-2 block text-sm font-medium">Nombre completo</label>
                                         <input
