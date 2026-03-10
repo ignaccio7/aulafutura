@@ -16,6 +16,7 @@ export interface CourseForEdit {
         total_duration: number;
         description: string | null;
         requirements: string | null;
+        trailer_url: string | null;
         lessons: Lesson[];
     };
 }
@@ -43,6 +44,7 @@ export default function CourseFormModal({
         is_active: boolean;
         thumbnail: File | null;
         requirements: string;
+        trailer_url: string;
         lessons: {
             title: string;
             duration: string;
@@ -57,6 +59,7 @@ export default function CourseFormModal({
         is_active: course ? Boolean(course.is_active) : true,
         thumbnail: null,
         requirements: course?.course?.requirements ?? '',
+        trailer_url: course?.course?.trailer_url ?? '',
         lessons:
             course?.course?.lessons?.map((l) => ({
                 title: l.title,
@@ -288,6 +291,22 @@ export default function CourseFormModal({
                                 rows={2}
                                 placeholder="Ej: No se requieren conocimientos previos..."
                                 className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                            />
+                        </div>
+
+                        {/* Trailer URL */}
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                URL del Trailer
+                            </label>
+                            <input
+                                type="text"
+                                value={data.trailer_url}
+                                onChange={(e) =>
+                                    setData('trailer_url', e.target.value)
+                                }
+                                placeholder="https://youtube.com/..."
+                                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                             />
                         </div>
 

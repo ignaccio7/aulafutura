@@ -13,6 +13,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LessonProgressController;
 use Illuminate\Support\Facades\Log;
 
 
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->name('user
     Route::get('/books', [UserController::class , 'books'])->name('books.index');
     // Rutas para los cursos que el usuario tendra acceso 
     Route::get('/courses', [UserController::class , 'courses'])->name('courses.index');
+    Route::post('/lesson-progress', [LessonProgressController::class, 'toggle'])->name('lesson.progress.toggle');
 });
 
 // Rutas publicas
@@ -73,7 +75,7 @@ Route::get('/recursos', function (Request $request) {
     $type = $request->input('type', 'all');
 
     // 2. Construimos la consulta base
-    $query = Product::with('category')->where('is_active', true);
+    $query = Product::with(['category', 'course.lessons'])->where('is_active', true);
 
     // 3. Aplicamos filtros si existen
     if ($type !== 'all') {

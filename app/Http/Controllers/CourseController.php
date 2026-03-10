@@ -41,6 +41,7 @@ class CourseController extends Controller
             'is_active' => 'boolean',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'requirements' => 'nullable|string',
+            'trailer_url' => 'nullable|string|url',
             'lessons' => 'nullable|array',
             'lessons.*.title' => 'required|string|max:200',
             'lessons.*.duration' => 'required|integer|min:1',
@@ -73,6 +74,8 @@ class CourseController extends Controller
                 'total_duration' => $duration,
                 'description' => $validated['description'] ?? null,
                 'requirements' => $validated['requirements'] ?? null,
+                'trailer_url' => $validated['trailer_url'] ?? null,
+
             ]);
 
             foreach ($lessons as $lesson) {
@@ -105,6 +108,7 @@ class CourseController extends Controller
             'is_active' => 'boolean',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'requirements' => 'nullable|string',
+            'trailer_url' => 'nullable|string|url',
             'lessons' => 'nullable|array',
             'lessons.*.title' => 'required|string|max:200',
             'lessons.*.duration' => 'required|integer|min:1',
@@ -137,6 +141,7 @@ class CourseController extends Controller
                 'total_duration' => $duration,
                 'description' => $validated['description'] ?? null,
                 'requirements' => $validated['requirements'] ?? null,
+                'trailer_url' => $validated['trailer_url'] ?? null,
             ]);
 
             $course->course->lessons()->delete();

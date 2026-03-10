@@ -6,10 +6,11 @@ import {
     Search,
     Video,
     X,
+    Clock,
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types ─────────────
 
 export interface Product {
     id: number;
@@ -18,6 +19,10 @@ export interface Product {
     price: string | number;
     type: 'book' | 'course';
     thumbnail: string | null;
+    course?: {
+        total_duration: number | null;
+        lessons: { id: number }[];
+    };
 }
 
 interface PaginatedData {
@@ -32,8 +37,16 @@ interface CatalogProps {
         type: string;
     };
 }
+function formatDuration(minutes: number | null): string {
+    if (!minutes || minutes <= 0) return '—';
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h === 0) return `${m}min`;
+    if (m === 0) return `${h}h`;
+    return `${h}h ${m}min`;
+}
 
-// ─── Skeleton Card ────────────────────────────────────────────────────────────
+// ─── Skeleton Card ─────────
 
 function SkeletonCard() {
     return (
@@ -134,6 +147,18 @@ function ProductCard({ product }: ProductCardProps) {
                     <p className="mb-4 line-clamp-2 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                         {product.description}
                     </p>
+                )}
+                {product.type === 'course' && product.course && (
+                    <div className="mb-3 flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+                        <span className="flex items-center gap-1">
+                            <Clock size={12} />
+                            {formatDuration(product.course.total_duration)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <BookOpen size={12} />
+                            {product.course.lessons?.length ?? 0} lecciones
+                        </span>
+                    </div>
                 )}
 
                 {/* ── Footer ── */}

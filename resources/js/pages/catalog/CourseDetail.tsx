@@ -6,7 +6,9 @@ import {
     Play,
     CheckCircle,
     Lock,
+    Search,
 } from 'lucide-react';
+import { useState } from 'react';
 
 // ─── Tipos ───────────
 
@@ -20,6 +22,7 @@ interface Lesson {
     title: string;
     duration: number | null;
     order_number: number;
+    video_url: string | null;
 }
 
 interface Course {
@@ -27,6 +30,7 @@ interface Course {
     total_duration: number | null;
     description: string | null;
     requirements: string | null;
+    trailer_url: string | null;
     lessons: Lesson[];
 }
 
@@ -42,6 +46,7 @@ interface Product {
 
 interface PageProps {
     product: Product;
+    userProgress: number[];
     [key: string]: unknown;
 }
 
@@ -61,12 +66,41 @@ function formatPrice(price: number): string {
 }
 
 // ─── Componentes ────────
+function getEmbedUrl(url: string): string {
+    // YouTube
+    const ytMatch = url.match(
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+    );
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
 
-function LessonRow({ lesson, index }: { lesson: Lesson; index: number }) {
+    // Vimeo
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+
+    return url;
+}
+function LessonRow({
+    lesson,
+    index,
+    onSelect,
+    completed,
+}: {
+    lesson: Lesson;
+    index: number;
+    onSelect: (lesson: Lesson) => void;
+    completed: boolean;
+}) {
     const isPreview = index === 0;
 
     return (
-        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-5 py-4 transition hover:border-blue-100 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900/30">
+        <div
+            className={`flex cursor-pointer items-center justify-between rounded-xl border px-5 py-4 transition-all duration-300 hover:shadow-sm ${
+                completed
+                    ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10'
+                    : 'border-slate-100 bg-white hover:border-blue-100 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-900/30'
+            }`}
+            onClick={() => onSelect(lesson)}
+        >
             <div className="flex items-center gap-4">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                     {isPreview ? (
@@ -93,6 +127,36 @@ function LessonRow({ lesson, index }: { lesson: Lesson; index: number }) {
                     <Clock size={13} />
                     {formatDuration(lesson.duration)}
                 </span>
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        fetch('/user/lesson-progress', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN':
+                                    document
+                                        .querySelector(
+                                            'meta[name="csrf-token"]',
+                                        )
+                                        ?.getAttribute('content') ?? '',
+                            },
+                            body: JSON.stringify({ lesson_id: lesson.id }),
+                        })
+                            .then(() => {
+                                router.reload({ preserveUrl: true });
+                            })
+                            .catch(() => {});
+                    }}
+                    className={`rounded-full p-1 transition ${completed ? 'text-emerald-500 hover:text-emerald-600' : 'text-slate-300 hover:text-slate-400'}`}
+                    title={
+                        completed
+                            ? 'Marcar como no completada'
+                            : 'Marcar como completada'
+                    }
+                >
+                    <CheckCircle size={18} />
+                </button>
                 {!isPreview && (
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-400 dark:bg-slate-800">
                         Bloqueado
@@ -106,10 +170,20 @@ function LessonRow({ lesson, index }: { lesson: Lesson; index: number }) {
 // ─── Página principal ─────────
 
 export default function CourseDetail() {
-    const { product } = usePage<PageProps>().props;
+    const { product, userProgress } = usePage<PageProps>().props;
     const course = product.course;
     const lessons = course?.lessons ?? [];
+    const [lessonSearch, setLessonSearch] = useState('');
+    const filteredLessons = lessons
+        .sort((a, b) => a.order_number - b.order_number)
+        .filter((l) =>
+            l.title.toLowerCase().includes(lessonSearch.toLowerCase()),
+        );
     const lessonCount = lessons.length;
+    const completedCount = userProgress.length;
+    const progressPercent =
+        lessonCount > 0 ? Math.round((completedCount / lessonCount) * 100) : 0;
+    const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
     return (
         <div className="min-h-screen bg-white font-['Instrument_Sans'] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -183,25 +257,89 @@ export default function CourseDetail() {
                                 </div>
                             </div>
                         )}
+                        {/* Reproductor */}
+                        {selectedLesson && selectedLesson.video_url && (
+                            <div className="mb-8">
+                                <div className="overflow-hidden rounded-2xl bg-black shadow-xl">
+                                    <iframe
+                                        src={getEmbedUrl(
+                                            selectedLesson.video_url,
+                                        )}
+                                        className="aspect-video w-full"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                </div>
+                                <div className="mt-3 flex items-center justify-between">
+                                    <p className="font-semibold text-slate-900 dark:text-white">
+                                        {selectedLesson.title}
+                                    </p>
+                                    <button
+                                        onClick={() => setSelectedLesson(null)}
+                                        className="text-sm text-slate-400 hover:text-slate-600"
+                                    >
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {/* Barra de progreso */}
+                        {userProgress.length > 0 && (
+                            <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+                                <div className="mb-2 flex items-center justify-between text-sm">
+                                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                                        Tu progreso
+                                    </span>
+                                    <span className="font-bold text-emerald-600">
+                                        {progressPercent}%
+                                    </span>
+                                </div>
+                                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                                    <div
+                                        className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                                        style={{ width: `${progressPercent}%` }}
+                                    />
+                                </div>
+                                <p className="mt-2 text-xs text-slate-400">
+                                    {completedCount} de {lessonCount} lecciones
+                                    completadas
+                                </p>
+                            </div>
+                        )}
 
                         {/* Temario */}
                         <div>
                             <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
                                 Temario
                             </h2>
+                            {/* Buscador */}
+                            <div className="relative mb-4">
+                                <Search
+                                    size={14}
+                                    className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar lección..."
+                                    value={lessonSearch}
+                                    onChange={(e) =>
+                                        setLessonSearch(e.target.value)
+                                    }
+                                    className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-9 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                                />
+                            </div>
                             <div className="space-y-3">
-                                {lessons
-                                    .sort(
-                                        (a, b) =>
-                                            a.order_number - b.order_number,
-                                    )
-                                    .map((lesson, index) => (
-                                        <LessonRow
-                                            key={lesson.id}
-                                            lesson={lesson}
-                                            index={index}
-                                        />
-                                    ))}
+                                {filteredLessons.map((lesson, index) => (
+                                    <LessonRow
+                                        key={lesson.id}
+                                        lesson={lesson}
+                                        index={index}
+                                        onSelect={setSelectedLesson}
+                                        completed={userProgress.includes(
+                                            lesson.id,
+                                        )}
+                                    />
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -209,9 +347,16 @@ export default function CourseDetail() {
                     {/* Columna derecha — sticky */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-24 overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
-                            {/* Thumbnail / Preview */}
+                            {/* Thumbnail / Trailer */}
                             <div className="relative h-48 overflow-hidden bg-blue-100 dark:bg-slate-800">
-                                {product.thumbnail ? (
+                                {course?.trailer_url ? (
+                                    <iframe
+                                        src={getEmbedUrl(course.trailer_url)}
+                                        className="h-full w-full"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                ) : product.thumbnail ? (
                                     <img
                                         src={`/storage/${product.thumbnail}`}
                                         alt={product.title}
