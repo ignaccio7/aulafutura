@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LessonProgressController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Log;
 
 
@@ -29,44 +30,43 @@ Route::get('/dashboard', function () {
 
 // Rutas para el administrador
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class , 'index'])->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
     // Rutas para los libros    
-    Route::get('/books', [BookController::class , 'index'])->name('books.index');
-    Route::post('/books', [BookController::class , 'store'])->name('books.store');
-    Route::get('/books/{book}', [BookController::class , 'show'])->name('books.show');
-    Route::post('/books/{book}', [BookController::class , 'update'])->name('books.update');
-    Route::delete('/books/{book}', [BookController::class , 'destroy'])->name('books.destroy');
-    Route::get('/books/{book}/preview', [BookController::class , 'preview'])->name('books.preview');
+    Route::get('/books', [BookController::class, 'index'])->name('books.index');
+    Route::post('/books', [BookController::class, 'store'])->name('books.store');
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+    Route::post('/books/{book}', [BookController::class, 'update'])->name('books.update');
+    Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+    Route::get('/books/{book}/preview', [BookController::class, 'preview'])->name('books.preview');
     // Rutas para los cursos        
-    Route::get('/courses-admin', [CourseController::class , 'index'])->name('courses.index');
-    Route::post('/courses-admin', [CourseController::class , 'store'])->name('courses.store');
-    Route::get('/courses-admin/{course}', [CourseController::class , 'show'])->name('courses.show');
-    Route::post('/courses-admin/{course}', [CourseController::class , 'update'])->name('courses.update');
-    Route::delete('/courses-admin/{course}', [CourseController::class , 'destroy'])->name('courses.destroy');
+    Route::get('/courses-admin', [CourseController::class, 'index'])->name('courses.index');
+    Route::post('/courses-admin', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses-admin/{course}', [CourseController::class, 'show'])->name('courses.show');
+    Route::post('/courses-admin/{course}', [CourseController::class, 'update'])->name('courses.update');
+    Route::delete('/courses-admin/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
 
     // Rutas para categorías
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::post('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-
 });
 
 // Rutas para el usuario estandar
 Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->name('user.')->group(function () {
-    Route::get('/dashboard', [UserController::class , 'index'])->name('dashboard');
+    Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
     // Rutas para los libros que el usuario compro
-    Route::get('/books', [UserController::class , 'books'])->name('books.index');
+    Route::get('/books', [UserController::class, 'books'])->name('books.index');
     // Rutas para los cursos que el usuario tendra acceso 
-    Route::get('/courses', [UserController::class , 'courses'])->name('courses.index');
+    Route::get('/courses', [UserController::class, 'courses'])->name('courses.index');
     Route::post('/lesson-progress', [LessonProgressController::class, 'toggle'])->name('lesson.progress.toggle');
 });
 
 // Rutas publicas
-Route::get('/courses/{id}', [CatalogController::class , 'show'])->name('catalog.courses.show');
+Route::get('/courses/{id}', [CatalogController::class, 'show'])->name('catalog.courses.show');
 
-Route::get('/books', [CatalogController::class , 'index'])
+Route::get('/books', [CatalogController::class, 'index'])
     ->name('products.books');
 
 Route::get('/recursos', function (Request $request) {
@@ -88,24 +88,30 @@ Route::get('/recursos', function (Request $request) {
     // 4. Paginamos los resultados
     $products = $query->latest()->paginate(6)->withQueryString();
     return Inertia::render('resources', [
-    'products' => $products, // Los productos paginados
-    'filters' => [ // Los filtros actuales para React
-    'search' => $search,
-    'type' => $type
-    ]
+        'products' => $products, // Los productos paginados
+        'filters' => [ // Los filtros actuales para React
+            'search' => $search,
+            'type' => $type
+        ]
     ]);
 });
 
-Route::get('/payment/{slug}', function ($slug) {
-    return Inertia::render('cardPayment', [
-    'slug' => $slug
-    ]);
-})->name('cardPayment');
+// Route::get('/payment/{slug}', function ($slug) {
+//     return Inertia::render('cardPayment', [
+//     'slug' => $slug
+//     ]);
+// })->name('cardPayment');
+
+Route::post('/payment/preference',   [PaymentController::class, 'createPreference'])->name('payment.preference');
+Route::get('/payment/success',       [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/failure',       [PaymentController::class, 'failure'])->name('payment.failure');
+Route::get('/payment/pending',       [PaymentController::class, 'pending'])->name('payment.pending');
+Route::get('/payment/{slug}',        [PaymentController::class, 'show'])->name('payment.show');
 
 /* Rutas para suscripciones */
-Route::get('/suscripciones', [SubscriptionPlanController::class , 'index'])->name('subscriptions.index');
-Route::post('/suscripciones', [SubscriptionPlanController::class , 'store'])->name('subscriptions.store');
-Route::get('/suscripciones/{plan:slug}', [SubscriptionPlanController::class , 'show'])->name('subscriptions.show');
+Route::get('/suscripciones', [SubscriptionPlanController::class, 'index'])->name('subscriptions.index');
+Route::post('/suscripciones', [SubscriptionPlanController::class, 'store'])->name('subscriptions.store');
+Route::get('/suscripciones/{plan:slug}', [SubscriptionPlanController::class, 'show'])->name('subscriptions.show');
 
 Route::get('/libro/chips-y-el-largo-camino-a-primavera', function () {
     return Inertia::render('detalle');
@@ -114,12 +120,12 @@ Route::get('/libro/chips-y-el-largo-camino-a-primavera', function () {
 Route::get('/', function (Request $request) {
     // 5. Retornamos la vista 'welcome' (la Landing Page) con todos los datos combinados
     return Inertia::render('welcome', [
-    'canRegister' => Features::enabled(Features::registration())
+        'canRegister' => Features::enabled(Features::registration())
     ]);
 })->name('home');
 
 
-Route::get('/products', [ProductController::class , 'index'])
+Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');
 
 require __DIR__ . '/settings.php';
