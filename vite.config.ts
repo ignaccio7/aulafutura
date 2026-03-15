@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
+const TUNNELMOLE_LARAVEL = 'yifeaq-ip-181-115-172-26.tunnelmole.net';
+// const TUNNELMOLE_VITE = 'vmg0fj-ip-181-115-172-26.tunnelmole.net';
+const TUNNELMOLE_VITE = 'localhost';
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -12,16 +16,21 @@ export default defineConfig({
             refresh: true,
         }),
         react({
-            babel: {
-                plugins: ['babel-plugin-react-compiler'],
-            },
+            babel: { plugins: ['babel-plugin-react-compiler'] },
         }),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        wayfinder({ formVariants: true }),
     ],
     esbuild: {
         jsx: 'automatic',
+    },
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        hmr: {
+            host: TUNNELMOLE_VITE, // ← solo hostname, sin protocolo
+            // protocol: 'wss',
+            // clientPort: 443,
+        },
     },
 });

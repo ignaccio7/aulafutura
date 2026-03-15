@@ -12,18 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('memberships', function (Blueprint $table) {
-            //
+            $table->string('mp_payment_id')->nullable()->after('status');
+            $table->string('mp_preference_id')->nullable()->after('mp_payment_id');
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::table('memberships', function (Blueprint $table) {
-            $table->string('mp_payment_id')->nullable()->after('status');
-            $table->string('mp_preference_id')->nullable()->after('mp_payment_id');
-        });
-    }
+    public function down(): void {}
 };

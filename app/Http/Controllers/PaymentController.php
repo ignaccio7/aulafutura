@@ -50,34 +50,39 @@ class PaymentController extends Controller
 
         $price = round((float)($plan->discount_price ?? $plan->price), 2);
 
+        // ← Guardamos los datos en sesión ANTES de ir a MP
+        session([
+            'mp_pending_user' => [
+                'plan_id'  => $plan->id,
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => bcrypt($request->password),
+            ]
+        ]);
+
         $preferenceData = [
             'items' => [
                 [
                     'title'       => "Plan {$plan->name}",
                     'quantity'    => 1,
                     'unit_price'  => $price,
-                    'currency_id' => 'ARS', // token argentino → ARS para pruebas
-                    // cuando tengas token peruano → cambiar a PEN
+                    'currency_id' => 'ARS',
                 ]
             ],
             'payer' => [
                 'email' => $request->email,
-            ],
-            'metadata' => [
-                'plan_id'  => $plan->id,
-                'name'     => $request->name,
-                'email'    => $request->email,
-                'password' => bcrypt($request->password),
             ],
             'back_urls' => [
                 'success' => route('payment.success'),
                 'failure' => route('payment.failure'),
                 'pending' => route('payment.pending'),
             ],
-            // 'auto_return' => 'approved',
+            'payment_methods' => [
+                'installments' => 1,
+            ],
         ];
 
-        if (app()->environment('production')) {
+        if (!str_contains(config('app.url'), 'localhost')) {
             $preferenceData['auto_return'] = 'approved';
         }
 
@@ -93,24 +98,19 @@ class PaymentController extends Controller
                 ? $preference->sandbox_init_point
                 : $preference->init_point;
 
-            // return redirect()->away($url);
             return response()->json(['url' => $url]);
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
-
-            // Ver el detalle real del error de MP
             $apiResponse = $e->getApiResponse();
-            Log::error('MP API Error detallado:', [
+            Log::error('MP API Error:', [
                 'status_code' => $e->getStatusCode(),
-                'message'     => $e->getMessage(),
                 'response'    => method_exists($apiResponse, 'getContent')
                     ? $apiResponse->getContent()
                     : (array) $apiResponse,
             ]);
 
-            // Con Inertia, los errores se devuelven así
-            return redirect()->back()->withErrors([
-                'payment' => 'Error al crear el pago. Código: ' . $e->getStatusCode()
-            ])->withInput();
+            return response()->json([
+                'message' => 'Error al crear el pago. Código: ' . $e->getStatusCode()
+            ], 500);
         }
     }
 
@@ -120,18 +120,26 @@ class PaymentController extends Controller
         $preferenceId = $request->query('preference_id');
         $status       = $request->query('status');
 
-        Log::info('MP Success callback:', [
-            'payment_id' => $paymentId,
-            'status'     => $status,
-        ]);
+        Log::info('MP Success callback:', $request->query());
 
         if ($status !== 'approved' || !$paymentId) {
+            return redirect()->route('payment.failure');
+        }
+
+        // ← Recuperamos los datos de la sesión
+        $pendingUser = session('mp_pending_user');
+
+        Log::info('Sesión mp_pending_user:', $pendingUser ?? []);
+
+        if (empty($pendingUser)) {
+            Log::error('No hay datos de usuario en sesión');
             return redirect()->route('payment.failure');
         }
 
         $this->configureMP();
 
         try {
+            // Verificamos que el pago sea real en la API de MP
             $client  = new PaymentClient();
             $payment = $client->get((int) $paymentId);
 
@@ -144,15 +152,14 @@ class PaymentController extends Controller
                 return redirect()->route('payment.failure');
             }
 
-            $meta = $payment->metadata;
-            $plan = SubscriptionPlan::findOrFail($meta->plan_id);
+            $plan = SubscriptionPlan::findOrFail($pendingUser['plan_id']);
 
-            DB::transaction(function () use ($meta, $plan, $paymentId, $preferenceId) {
+            DB::transaction(function () use ($pendingUser, $plan, $paymentId, $preferenceId) {
                 $user = User::firstOrCreate(
-                    ['email' => $meta->email],
+                    ['email' => $pendingUser['email']],
                     [
-                        'name'      => $meta->name,
-                        'password'  => $meta->password, // ya viene hasheada
+                        'name'      => $pendingUser['name'],
+                        'password'  => $pendingUser['password'],
                         'role_id'   => 2,
                         'is_active' => true,
                     ]
@@ -171,14 +178,16 @@ class PaymentController extends Controller
                 Auth::login($user);
             });
 
+            // Limpiar la sesión después de usarla
+            session()->forget('mp_pending_user');
+
             return redirect()->route('dashboard')
                 ->with('success', "¡Bienvenido! Tu plan {$plan->name} está activo.");
         } catch (\Exception $e) {
-            Log::error('Error en success callback:', [
+            Log::error('Error en success:', [
                 'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
+                'line'    => $e->getLine(),
             ]);
-
             return redirect()->route('payment.failure');
         }
     }
