@@ -46,10 +46,12 @@ export default function CourseFormModal({
         requirements: string;
         trailer_url: string;
         lessons: {
-            title: string;
+           title: string;
             duration: string;
             order_number: number;
             video_url: string;
+            video_type: string;
+            video_file: File | null;
         }[];
     }>({
         title: course?.title ?? '',
@@ -66,6 +68,8 @@ export default function CourseFormModal({
                 duration: String(l.duration),
                 order_number: l.order_number,
                 video_url: l.video_url ?? '',
+                video_type: 'url',
+video_file: null,
             })) ?? [],
     });
 
@@ -85,6 +89,8 @@ export default function CourseFormModal({
                         duration: String(l.duration),
                         order_number: l.order_number,
                         video_url: l.video_url ?? '',
+                        video_type: 'url',
+video_file: null,
                     })) ?? [],
             });
         }
@@ -118,16 +124,18 @@ export default function CourseFormModal({
 
     // Lecciones
     const addLesson = () => {
-        setData('lessons', [
-            ...data.lessons,
-            {
-                title: '',
-                duration: '',
-                order_number: data.lessons.length + 1,
-                video_url: '',
-            },
-        ]);
-    };
+    setData('lessons', [
+        ...data.lessons,
+        {
+            title: '',
+            duration: '',
+            order_number: data.lessons.length + 1,
+            video_url: '',
+            video_type: 'url',
+            video_file: null,
+        },
+    ]);
+};
 
     const removeLesson = (index: number) => {
         setData(
@@ -141,6 +149,12 @@ export default function CourseFormModal({
     const updateLesson = (index: number, field: string, value: string) => {
         const updated = [...data.lessons];
         updated[index] = { ...updated[index], [field]: value };
+        setData('lessons', updated);
+    };
+
+    const updateLessonFile = (index: number, file: File | null) => {
+        const updated = [...data.lessons];
+        updated[index] = { ...updated[index], video_file: file };
         setData('lessons', updated);
     };
 
@@ -406,19 +420,40 @@ export default function CourseFormModal({
                                             className="flex-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-blue-400"
                                         />
 
-                                        <input
-                                            type="text"
-                                            value={lesson.video_url ?? ''}
-                                            onChange={(e) =>
-                                                updateLesson(
-                                                    index,
-                                                    'video_url',
-                                                    e.target.value,
-                                                )
-                                            }
-                                            placeholder="URL del video"
-                                            className="flex-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-blue-400"
-                                        />
+                                        <div className="flex flex-1 flex-col gap-1">
+    <div className="flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs">
+        <button
+            type="button"
+            onClick={() => updateLesson(index, 'video_type', 'url')}
+            className={`flex-1 rounded py-1 transition ${lesson.video_type !== 'file' ? 'bg-white shadow text-blue-600 font-medium' : 'text-gray-400'}`}
+        >
+            URL
+        </button>
+        <button
+            type="button"
+            onClick={() => updateLesson(index, 'video_type', 'file')}
+            className={`flex-1 rounded py-1 transition ${lesson.video_type === 'file' ? 'bg-white shadow text-blue-600 font-medium' : 'text-gray-400'}`}
+        >
+            Archivo
+        </button>
+    </div>
+    {lesson.video_type === 'file' ? (
+        <input
+            type="file"
+            accept="video/*"
+            onChange={(e) => updateLessonFile(index, e.target.files?.[0] ?? null)}
+            className="flex-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-400"
+        />
+    ) : (
+        <input
+            type="text"
+            value={lesson.video_url ?? ''}
+            onChange={(e) => updateLesson(index, 'video_url', e.target.value)}
+            placeholder="https://youtube.com/..."
+            className="flex-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm outline-none focus:border-blue-400"
+        />
+    )}
+</div>
                                         <div className="flex items-center gap-1">
                                             <input
                                                 type="number"

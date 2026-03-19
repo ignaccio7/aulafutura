@@ -261,14 +261,25 @@ export default function CourseDetail() {
                         {selectedLesson && selectedLesson.video_url && (
                             <div className="mb-8">
                                 <div className="overflow-hidden rounded-2xl bg-black shadow-xl">
-                                    <iframe
-                                        src={getEmbedUrl(
-                                            selectedLesson.video_url,
-                                        )}
-                                        className="aspect-video w-full"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    />
+                                    {selectedLesson.video_url.startsWith(
+                                        'http',
+                                    ) ? (
+                                        <iframe
+                                            src={getEmbedUrl(
+                                                selectedLesson.video_url,
+                                            )}
+                                            className="aspect-video w-full"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    ) : (
+                                        <video
+                                            src={`/storage/${selectedLesson.video_url}`}
+                                            className="aspect-video w-full"
+                                            controls
+                                            controlsList="nodownload"
+                                        />
+                                    )}
                                 </div>
                                 <div className="mt-3 flex items-center justify-between">
                                     <p className="font-semibold text-slate-900 dark:text-white">

@@ -46,7 +46,7 @@ class CourseController extends Controller
             'lessons.*.title' => 'required|string|max:200',
             'lessons.*.duration' => 'required|integer|min:1',
             'lessons.*.order_number' => 'required|integer|min:1',
-            'lessons.*.video_url' => 'nullable|string|url',
+            'lessons.*.video_url' => 'nullable|string',
         ]);
 
         $thumbnailPath = null;
@@ -78,15 +78,23 @@ class CourseController extends Controller
 
             ]);
 
-            foreach ($lessons as $lesson) {
-                Lesson::create([
-                    'course_id' => $course->id,
-                    'title' => $lesson['title'],
-                    'duration' => $lesson['duration'],
-                    'order_number' => $lesson['order_number'],
-                    'video_url' => $lesson['video_url'] ?? null,
-                ]);
-            }
+            foreach ($lessons as $index => $lesson) {
+    $videoUrl = $lesson['video_url'] ?? null;
+    
+    // Si viene un archivo de video
+    $videoFile = $request->file("lessons.{$index}.video_file");
+    if ($videoFile) {
+        $videoUrl = $videoFile->store('courses/videos', 'public');
+    }
+    
+    Lesson::create([
+        'course_id' => $course->id,
+        'title' => $lesson['title'],
+        'duration' => $lesson['duration'],
+        'order_number' => $lesson['order_number'],
+        'video_url' => $videoUrl,
+    ]);
+}
         });
 
         return redirect()->back()->with('success', 'Curso creado correctamente.');
@@ -113,7 +121,7 @@ class CourseController extends Controller
             'lessons.*.title' => 'required|string|max:200',
             'lessons.*.duration' => 'required|integer|min:1',
             'lessons.*.order_number' => 'required|integer|min:1',
-            'lessons.*.video_url' => 'nullable|string|url',
+            'lessons.*.video_url' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($validated, $request, $course) {
@@ -145,15 +153,23 @@ class CourseController extends Controller
             ]);
 
             $course->course->lessons()->delete();
-            foreach ($lessons as $lesson) {
-                Lesson::create([
-                    'course_id' => $course->course->id,
-                    'title' => $lesson['title'],
-                    'duration' => $lesson['duration'],
-                    'order_number' => $lesson['order_number'],
-                    'video_url' => $lesson['video_url'] ?? null,
-                ]);
-            }
+            foreach ($lessons as $index => $lesson) {
+    $videoUrl = $lesson['video_url'] ?? null;
+    
+    // Si viene un archivo de video
+    $videoFile = $request->file("lessons.{$index}.video_file");
+    if ($videoFile) {
+        $videoUrl = $videoFile->store('courses/videos', 'public');
+    }
+    
+    Lesson::create([
+        'course_id' => $course->id,
+        'title' => $lesson['title'],
+        'duration' => $lesson['duration'],
+        'order_number' => $lesson['order_number'],
+        'video_url' => $videoUrl,
+    ]);
+}
         });
 
         return redirect()->back()->with('success', 'Curso actualizado correctamente.');
