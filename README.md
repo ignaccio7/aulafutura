@@ -31,3 +31,18 @@ git push -u origin nombre-rama
 ```
 
 Convenientemente usar feat/nombre-rama
+
+
+
+| Campo | Valor |
+|-------|-------|
+| **Número** | `4075 5957 1648 3764` |
+| **Vencimiento** | `11/30` |
+| **CVV** | `123` |
+| **Nombre titular** | `APRO APRO` |
+| **Tipo documento** | `DNI` |
+| **Número DNI** | `12345678` |
+
+
+C:\Php\php.ini
+upload_max_filesize, post_max_size y memory_limit a 512

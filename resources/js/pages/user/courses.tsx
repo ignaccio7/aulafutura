@@ -1,121 +1,115 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { PlayCircle, Award, Clock, BookOpen } from 'lucide-react';
+import { PlayCircle, BookOpen } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Mi Dashboard', href: '/user/dashboard' },
-  { title: 'Mis Cursos', href: '/user/courses' },
+    { title: 'Mi Dashboard', href: '/user/dashboard' },
+    { title: 'Mis Cursos', href: '/user/courses' },
 ];
 
-export default function UserCourses() {
-  // Datos de ejemplo
-  const courses = [
-    {
-      id: 1,
-      title: 'Matemáticas Divertidas para Primaria',
-      instructor: 'Profa. Carmen García',
-      thumbnail: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=400',
-      progress: 65,
-      lessons: 24,
-      totalTime: '12h 30m',
-    },
-    {
-      id: 2,
-      title: 'Introducción a la Ciencias Naturales',
-      instructor: 'Dr. Roberto Sánchez',
-      thumbnail: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=400',
-      progress: 10,
-      lessons: 18,
-      totalTime: '8h 45m',
-    },
-    {
-      id: 3,
-      title: 'Lectoescritura Creativa',
-      instructor: 'Elena Martínez',
-      thumbnail: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=400',
-      progress: 100,
-      lessons: 15,
-      totalTime: '6h 15m',
-    }
-  ];
+interface CourseItem {
+    id: number;
+    title: string;
+    thumbnail: string | null;
+    description: string | null;
+}
 
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Mis Cursos - Aula Futura" />
+interface Props {
+    courses: CourseItem[];
+}
 
-      <div className="flex flex-col gap-8 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Mis Cursos</h1>
-            <p className="mt-1 text-muted-foreground">Continúa tu aprendizaje donde lo dejaste.</p>
-          </div>
-          <div className="hidden md:block">
-            <BookOpen className="h-12 w-12 text-green-500/20" />
-          </div>
-        </div>
+export default function UserCourses({ courses }: Props) {
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Mis Cursos" />
 
-        {courses.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {courses.map((course) => (
-              <div key={course.id} className="flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md">
-                <div className="relative aspect-video overflow-hidden bg-muted">
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity hover:opacity-100 hover:bg-black/40 cursor-pointer">
-                    <PlayCircle className="h-16 w-16 text-white drop-shadow-lg" />
-                  </div>
-                  {course.progress === 100 && (
-                    <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                      <Award className="h-3 w-3" /> Completado
+            <div className="flex flex-col gap-8 p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+                            Mis Cursos
+                        </h1>
+                        <p className="mt-1 text-muted-foreground">
+                            {courses.length > 0
+                                ? `Tienes acceso a ${courses.length} curso${courses.length !== 1 ? 's' : ''} con tu plan.`
+                                : 'Continúa tu aprendizaje donde lo dejaste.'}
+                        </p>
                     </div>
-                  )}
+                    <div className="hidden md:block">
+                        <BookOpen className="h-12 w-12 text-green-500/20" />
+                    </div>
                 </div>
 
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="mb-4">
-                    <h3 className="font-bold text-xl leading-tight mb-2 line-clamp-2">{course.title}</h3>
-                    <p className="text-sm text-muted-foreground">{course.instructor}</p>
-                  </div>
+                {courses.length > 0 ? (
+                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                        {courses.map((course) => (
+                            <div
+                                key={course.id}
+                                className="flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md"
+                            >
+                                {/* Thumbnail */}
+                                <div className="relative aspect-video overflow-hidden bg-muted">
+                                    {course.thumbnail ? (
+                                        <img
+                                            src={`/storage/${course.thumbnail}`}
+                                            alt={course.title}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex h-full w-full items-center justify-center bg-emerald-50 dark:bg-emerald-900/20">
+                                            <PlayCircle className="h-16 w-16 text-emerald-200 dark:text-emerald-800" />
+                                        </div>
+                                    )}
+                                    {/* Overlay play */}
+                                    <div className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/20 opacity-0 transition-opacity hover:bg-black/40 hover:opacity-100">
+                                        <PlayCircle className="h-16 w-16 text-white drop-shadow-lg" />
+                                    </div>
+                                </div>
 
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" /> {course.totalTime}
-                      </div>
-                      <div>{course.progress}% completado</div>
+                                {/* Info */}
+                                <div className="flex flex-1 flex-col p-5">
+                                    <h3 className="line-clamp-2 text-xl leading-tight font-bold">
+                                        {course.title}
+                                    </h3>
+                                    {course.description && (
+                                        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                                            {course.description}
+                                        </p>
+                                    )}
+
+                                    {/* Botón — lo conectará quien maneje el módulo de cursos */}
+                                    <Link
+                                        href={`/courses/${course.id}`}
+                                        className="group mt-5 mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                                    >
+                                        Ir al curso
+                                        <PlayCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all duration-1000 ${course.progress === 100 ? 'bg-green-500' : 'bg-blue-600'}`}
-                        style={{ width: `${course.progress}%` }}
-                      ></div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed py-20 text-center">
+                        <PlayCircle className="mb-4 h-16 w-16 text-muted-foreground/30" />
+                        <h2 className="text-xl font-semibold">
+                            Tu plan no incluye cursos
+                        </h2>
+                        <p className="mt-2 max-w-sm text-muted-foreground">
+                            Actualiza tu plan para acceder a nuestros cursos y
+                            potenciar tu aprendizaje.
+                        </p>
+                        <Link
+                            href="/suscripciones"
+                            className="mt-6 rounded-full bg-green-600 px-6 py-2 font-medium text-white transition-colors hover:bg-green-700"
+                        >
+                            Ver planes
+                        </Link>
                     </div>
-
-                    <button className="w-full mt-5 px-4 py-2 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group">
-                      {course.progress === 0 ? 'Empezar Curso' : course.progress === 100 ? 'Repasar Contenido' : 'Continuar Aprendizaje'}
-                      <PlayCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-3xl">
-            <PlayCircle className="h-16 w-16 text-muted-foreground/30 mb-4" />
-            <h2 className="text-xl font-semibold">No tienes cursos activos</h2>
-            <p className="text-muted-foreground mt-2 max-w-sm">Descubre cursos increíbles y potencia tus habilidades hoy.</p>
-            <a href="/catalog" className="mt-6 px-6 py-2 bg-green-600 text-white rounded-full font-medium hover:bg-green-700 transition-colors">
-              Ver Catálogo de Cursos
-            </a>
-          </div>
-        )}
-      </div>
-    </AppLayout>
-  );
+                )}
+            </div>
+        </AppLayout>
+    );
 }

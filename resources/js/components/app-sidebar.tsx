@@ -1,12 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import {
-    BookOpen,
-    Folder,
-    LayoutGrid,
-    LibraryBig,
-    Video,
-    Tag,
-} from 'lucide-react';
+import { BookOpen, LayoutGrid, LibraryBig, Video, Tag } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -19,10 +12,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import type { NavItem } from '@/types';
-import AppLogo from './app-logo';
 import { dashboard } from '@/routes';
 import admin from '@/routes/admin';
+import user from '@/routes/user';
+import type { NavItem } from '@/types';
+import AppLogo from './app-logo';
 
 const footerNavItems: NavItem[] = [
     // {
@@ -64,6 +58,11 @@ export function AppSidebar() {
                     href: '/admin/categories',
                     icon: Tag,
                 },
+                {
+                    title: 'Planes',
+                    href: admin.subscriptionPlans.index().url,
+                    icon: BookOpen,
+                },
             ];
         } else if (role === 'user') {
             return [
@@ -81,6 +80,11 @@ export function AppSidebar() {
                     title: 'Mis Cursos',
                     href: '/user/courses',
                     icon: Video,
+                },
+                {
+                    title: 'Planes',
+                    href: user.planes.index().url,
+                    icon: BookOpen,
                 },
             ];
         }

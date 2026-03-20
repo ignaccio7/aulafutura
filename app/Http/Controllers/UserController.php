@@ -2,47 +2,126 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SubscriptionPlanResource;
+use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     public function index()
     {
+        $user = request()->user();
+        Log::info("El usuario es");
+        Log::info($user);
+
+        // Membresía activa con su plan y los productos incluidos
+        $membership = $user->memberships()
+            ->where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->with(['plan.products' => function ($q) {
+                $q->select('products.id', 'products.title', 'products.type', 'products.thumbnail', 'products.description');
+            }])
+            ->latest()
+            ->first();
+
+        Log::info("Membresia del usuario");
+        Log::info($membership);
+
+        // Si no tiene membresía activa
+        if (!$membership) {
+            return inertia('user/dashboard', [
+                'membership'  => null,
+                'stats'       => ['total_books' => 0, 'total_courses' => 0],
+                'books'       => [],
+                'courses'     => [],
+            ]);
+        }
+
+        // Separar productos del plan por tipo
+        $products = $membership->plan->products ?? collect();
+        $books    = $products->where('type', 'book')->values();
+        $courses  = $products->where('type', 'course')->values();
+
         return inertia('user/dashboard', [
             'membership' => [
-                'plan' => 'Premium Anual',
-                'active' => true,
-                'expires_at' => now()->addMonths(10)->format('d M, Y'),
-                'price' => '$199.00',
+                'plan'       => $membership->plan->name,
+                'icon'       => $membership->plan->icon ?? 'star',
+                'active'     => $membership->status === 'active',
+                'start_date' => $membership->start_date->format('d M, Y'),
+                'expires_at' => $membership->end_date->format('d M, Y'),
+                'price'      => $membership->plan->currency . ' ' . number_format($membership->plan->price, 2),
             ],
             'stats' => [
-                'total_books' => 5,
-                'total_courses' => 3,
+                'total_books'   => $books->count(),
+                'total_courses' => $courses->count(),
             ],
-            'courseProgress' => [
-                ['name' => 'Matemáticas', 'progress' => 75],
-                ['name' => 'Ciencias', 'progress' => 40],
-                ['name' => 'Literatura', 'progress' => 90],
-                ['name' => 'Historia', 'progress' => 20],
-            ],
-            'recentCourses' => [
-                ['id' => 1, 'title' => 'Matemáticas Divertidas', 'instructor' => 'Carmen G.', 'progress' => 75, 'image' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400'],
-                ['id' => 2, 'title' => 'Ciencias Naturales', 'instructor' => 'Roberto S.', 'progress' => 40, 'image' => 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400'],
-            ],
-            'purchasedBooks' => [
-                ['id' => 1, 'title' => 'Chips y Primavera', 'author' => 'A. Futura', 'image' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400'],
-                ['id' => 2, 'title' => 'Aula Digital', 'author' => 'Eduardo T.', 'image' => 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400'],
-            ]
+            'books'   => $books,
+            'courses' => $courses,
         ]);
     }
 
+
     public function books()
     {
-        return inertia('user/books');
+        $user = request()->user();
+
+        $membership = $user->memberships()
+            ->where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->with(['plan.products' => function ($q) {
+                $q->where('products.type', 'book')
+                    ->select('products.id', 'products.title', 'products.thumbnail', 'products.description');
+            }])
+            ->latest()
+            ->first();
+
+        $books = $membership?->plan->products ?? collect();
+
+        return inertia('user/books', [
+            'books' => $books->values(),
+        ]);
     }
 
     public function courses()
     {
-        return inertia('user/courses');
+        $user = request()->user();
+
+        $membership = $user->memberships()
+            ->where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->with(['plan.products' => function ($q) {
+                $q->where('products.type', 'course')
+                    ->select('products.id', 'products.title', 'products.thumbnail', 'products.description');
+            }])
+            ->latest()
+            ->first();
+
+        $courses = $membership?->plan->products ?? collect();
+
+        return inertia('user/courses', [
+            'courses' => $courses->values(),
+        ]);
+    }
+
+    public function planes()
+    {
+        $user = request()->user();
+        $plans = SubscriptionPlan::active()
+            ->with(['products' => fn($q) => $q->select('products.id', 'products.title', 'products.type')])
+            ->orderBy('price')
+            ->get();
+
+        $currentPlanId = $user
+            ->memberships()
+            ->where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->latest()
+            ->value('plan_id');
+
+        return inertia('user/plans', [
+            'plans'         => SubscriptionPlanResource::collection($plans),
+            'currentPlanId' => $currentPlanId,
+        ]);
     }
 }

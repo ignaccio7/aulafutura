@@ -13,6 +13,8 @@ class Membership extends Model
     'start_date',
     'end_date',
     'status',
+    'mp_payment_id',
+    'mp_preference_id',
   ];
 
   protected $casts = [
@@ -33,7 +35,7 @@ class Membership extends Model
    */
   public function plan(): BelongsTo
   {
-    return $this->belongsTo(SubscriptionPlan::class , 'plan_id');
+    return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
   }
 
   /**
