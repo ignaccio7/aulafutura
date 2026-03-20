@@ -4,16 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration 
+return new class extends Migration
 {
     public function up(): void
     {
         Schema::table('subscription_plans', function (Blueprint $table) {
             $table->string('slug')->after('name');
             $table->enum('billing_cycle', [
-                'semanal', 'mensual', 'trimestral',
-                'semestral', 'anual'
+                'semanal',
+                'mensual',
+                'trimestral',
+                'semestral',
+                'anual'
             ])->after('slug');
+            $table->string('icon')->default('star')->after('name');
             $table->decimal('discount_price', 10, 2)->nullable()->after('price');
             $table->char('currency', 3)->default('USD')->after('discount_price');
             $table->json('features')->nullable()->after('currency');

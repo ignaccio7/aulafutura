@@ -4,68 +4,83 @@ namespace Database\Seeders;
 
 use App\Models\SubscriptionPlan;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionPlanSeeder extends Seeder
 {
     public function run(): void
     {
-        SubscriptionPlan::insert([
+        // Limpiar tabla pivot antes de recrear los planes
+        DB::table('plan_products')->truncate();
+        SubscriptionPlan::truncate();
+
+        $plans = [
             [
                 'name'           => 'Explorador',
-                'slug'           => 'basico',
+                'slug'           => 'explorador',
+                'icon'           => 'star',
                 'billing_cycle'  => 'trimestral',
                 'duration_days'  => 90,
-                'price'          => 19.99,
+                'price'          => 15.00,
                 'discount_price' => null,
-                'currency'       => 'USD',
-                'features'       => json_encode([
-                    ['text' => 'Acceso a 5 libros PDF', 'icon' => 'book'],
-                    ['text' => '2 Cursos básicos', 'icon' => 'video'],
-                    ['text' => 'Soporte por email', 'icon' => 'mail'],
-                    ['text' => 'Certificado digital', 'icon' => 'award'],
-                ]),
+                'currency'       => 'ARS',
+                'features'       => [
+                    'Acceso a 1 libro digital',
+                    'Contenido actualizado cada trimestre',
+                    'Soporte por email',
+                ],
                 'is_active'      => true,
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'products'       => [1], // product_id 1
             ],
             [
                 'name'           => 'Aventura',
-                'slug'           => 'plus',
+                'slug'           => 'aventura',
+                'icon'           => 'rocket',
                 'billing_cycle'  => 'semestral',
                 'duration_days'  => 180,
-                'price'          => 35.00,
-                'discount_price' => null,
-                'currency'       => 'USD',
-                'features'       => json_encode([
-                    ['text' => 'Todos los libros PDF', 'icon' => 'book'],
-                    ['text' => '5 Cursos interactivos', 'icon' => 'video'],
-                    ['text' => 'Acceso a webinars', 'icon' => 'globe'],
-                    ['text' => 'Soporte prioritario', 'icon' => 'headphones'],
-                    ['text' => 'Comunidad de padres', 'icon' => 'users'],
-                ]),
+                'price'          => 25.00,
+                // 'discount_price' => 20.00,
+                'currency'       => 'ARS',
+                'features'       => [
+                    'Acceso a todos los libros del plan Explorador',
+                    'Acceso a cursos introductorios',
+                    'Descarga de materiales en PDF',
+                    'Soporte prioritario',
+                ],
                 'is_active'      => true,
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'products'       => [1], // agrega más IDs cuando tengas más productos
             ],
             [
                 'name'           => 'Maestro',
-                'slug'           => 'premium',
+                'slug'           => 'maestro',
+                'icon'           => 'crown',
                 'billing_cycle'  => 'anual',
                 'duration_days'  => 365,
-                'price'          => 59.99,
-                'discount_price' => null,
-                'currency'       => 'USD',
-                'features'       => json_encode([
-                    ['text' => 'Acceso ILIMITADO total', 'icon' => 'infinity'],
-                    ['text' => 'Todos los cursos nuevos', 'icon' => 'video'],
-                    ['text' => 'Mentoría 1 a 1', 'icon' => 'user'],
-                    ['text' => 'Material físico incluido', 'icon' => 'package'],
-                    ['text' => 'Acceso anticipado', 'icon' => 'zap'],
-                ]),
+                'price'          => 45.00,
+                // 'discount_price' => 35.00,
+                'currency'       => 'ARS',
+                'features'       => [
+                    'Acceso ilimitado a todos los libros',
+                    'Acceso ilimitado a todos los cursos',
+                    'Certificados de finalización',
+                    'Acceso anticipado a nuevo contenido',
+                    'Soporte 24/7 por chat',
+                ],
                 'is_active'      => true,
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'products'       => [1], // agrega más IDs cuando tengas más productos
             ],
-        ]);
+        ];
+
+        foreach ($plans as $data) {
+            $productIds = $data['products'];
+            unset($data['products']);
+
+            $plan = SubscriptionPlan::create($data);
+
+            // Asociar productos en la tabla pivot
+            $plan->products()->sync($productIds);
+        }
+
+        $this->command->info('✓ 3 planes creados: Explorador, Aventura, Maestro');
     }
 }
