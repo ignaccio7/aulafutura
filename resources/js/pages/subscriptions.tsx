@@ -1,173 +1,221 @@
-import { Head, Link } from '@inertiajs/react';
-import {
-    Check,
-    Star,
-    Rocket,
-    Crown,
-    ArrowRight,
-    ShieldCheck,
-} from 'lucide-react';
-import React from 'react';
+// resources/js/pages/subscriptions.tsx
 import PublicLayout from '@/layouts/public-layout';
-import { cardPayment } from '@/routes';
-
-
-interface Feature {
-    text: string;
-    icon: string;
-}
+import { Head, Link } from '@inertiajs/react';
+import { Rocket, Star, Crown, Check, Zap } from 'lucide-react';
 
 interface Plan {
     id: number;
     name: string;
     slug: string;
-    price: string;
-    discount_price: string | null;
-    effective_price: string;
+    icon: 'star' | 'rocket' | 'crown';
     billing_cycle: string;
-    features: Feature[];
+    duration_days: number;
+    price: number;
+    discount_price: number | null;
+    currency: string;
+    features: string[];
     is_active: boolean;
 }
 
 interface Props {
-    plans: {
-        data: Plan[];
-    };
+    plans: Plan[];
 }
 
-const iconMap: Record<string, React.ReactElement> = {
-    basico: <Rocket className="text-blue-500" size={32} />,
-    plus: <Star className="fill-yellow-500 text-yellow-500" size={32} />,
-    premium: <Crown className="text-purple-500" size={32} />,
+const BILLING_LABELS: Record<string, string> = {
+    semanal: 'por semana',
+    mensual: 'por mes',
+    trimestral: 'por trimestre',
+    semestral: 'por semestre',
+    anual: 'por año',
 };
 
-export default function Suscripciones({ plans }: Props) {
-    const brandBg = 'bg-[#1D4ED8] dark:bg-blue-600';
-    const brandText = 'text-[#1D4ED8] dark:text-blue-400';
+const ICONS = {
+    star: Star,
+    rocket: Rocket,
+    crown: Crown,
+};
+
+// El plan del medio (índice 1) se destaca visualmente
+const HIGHLIGHT_INDEX = 1;
+
+export default function Subscriptions({ plans: { data: plans } }: Props) {
+    console.log(plans);
 
     return (
-        <PublicLayout
-            title="Planes de Suscripcion - AulaFutura"
-            toolbar={false}
-        >
-            <div className="min-h-screen bg-white font-sans text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
-                <Head title="Planes de Suscripción - AulaFutura" />
+        <PublicLayout>
+            <Head title="Planes de Suscripción" />
 
-                {/* --- HEADER --- */}
-                <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white pt-32 pb-16 dark:from-slate-900 dark:to-slate-950">
-                    <div className="mx-auto max-w-7xl px-6 text-center">
-                        <h1 className="mb-6 text-4xl leading-tight font-bold md:text-5xl lg:text-6xl">
-                            Elige el plan ideal para su{' '}
-                            <span className={brandText}>crecimiento</span>
-                        </h1>
-                        <p className="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-                            Invierte en una educación de calidad. Todos nuestros
-                            planes incluyen actualizaciones mensuales y
-                            contenido seguro para niños.
-                        </p>
-                    </div>
-                    <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-blue-400/10 blur-3xl"></div>
-                    <div className="absolute top-1/2 -right-24 h-64 w-64 rounded-full bg-yellow-400/10 blur-3xl"></div>
-                </section>
+            <div className="min-h-screen bg-gray-50 px-4 py-16 dark:bg-gray-950">
+                {/* Header */}
+                <div className="mx-auto mb-12 max-w-2xl text-center">
+                    <span className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
+                        <Zap className="h-3 w-3" /> Planes disponibles
+                    </span>
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                        Elige tu plan
+                    </h1>
+                    <p className="mt-3 text-gray-500 dark:text-gray-400">
+                        Accede a libros y cursos seleccionados según el plan que
+                        mejor se adapte a ti.
+                    </p>
+                </div>
 
-                {/* --- PLANES --- */}
-                <section className="px-6 py-20">
-                    <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-                        {plans.data.map((plan) => (
-                            <div
-                                key={plan.id}
-                                className={`relative flex flex-col rounded-[2.5rem] border p-8 transition-all duration-300 hover:shadow-2xl ${
-                                    plan.slug === 'plus'
-                                        ? 'z-10 scale-105 border-blue-500 bg-white shadow-xl dark:border-blue-400 dark:bg-slate-900'
-                                        : 'border-slate-100 bg-slate-50/50 hover:bg-white dark:border-slate-800 dark:bg-slate-900/40 dark:hover:bg-slate-900'
-                                }`}
-                            >
-                                {plan.slug === 'plus' && (
-                                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-blue-500 px-4 py-1 text-sm font-bold text-white shadow-lg">
-                                        MÁS POPULAR
-                                    </span>
-                                )}
+                {plans?.length !== 0 && (
+                    <div
+                        className={`mx-auto grid max-w-5xl gap-6 ${
+                            plans.length === 1
+                                ? 'max-w-sm'
+                                : plans.length === 2
+                                  ? 'max-w-2xl grid-cols-1 sm:grid-cols-2'
+                                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                        }`}
+                    >
+                        {/* Cards */}
+                        {plans?.map((plan, idx) => {
+                            const Icon = ICONS[plan.icon] ?? Star;
+                            const isHighlighted =
+                                plans.length >= 3 && idx === HIGHLIGHT_INDEX;
+                            const effectivePrice =
+                                plan.discount_price ?? plan.price;
 
-                                <div className="mb-8 flex items-center justify-between">
+                            return (
+                                <div
+                                    key={plan.id}
+                                    className={`relative flex flex-col rounded-2xl border p-8 transition-all duration-200 ${
+                                        isHighlighted
+                                            ? 'scale-105 border-blue-500 bg-blue-600 text-white shadow-2xl shadow-blue-500/20'
+                                            : 'border-gray-200 bg-white shadow-sm hover:shadow-md dark:border-gray-800 dark:bg-gray-900'
+                                    }`}
+                                >
+                                    {/* Badge popular */}
+                                    {isHighlighted && (
+                                        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                                            <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-900 shadow">
+                                                ⭐ Más popular
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Icono */}
                                     <div
-                                        className={`rounded-2xl p-4 shadow-sm ${plan.slug === 'plus' ? 'bg-blue-50 dark:bg-slate-800' : 'bg-white dark:bg-slate-800'}`}
+                                        className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl ${
+                                            isHighlighted
+                                                ? 'bg-white/20'
+                                                : 'bg-blue-50 dark:bg-blue-900/30'
+                                        }`}
                                     >
-                                        {iconMap[plan.slug]}
+                                        <Icon
+                                            className={`h-6 w-6 ${
+                                                isHighlighted
+                                                    ? 'text-white'
+                                                    : 'text-blue-600 dark:text-blue-400'
+                                            }`}
+                                        />
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                                            {plan.billing_cycle}
-                                        </p>
-                                        <div className="flex items-baseline justify-end gap-1">
-                                            <span className="text-3xl font-black">
-                                                S/ {plan.effective_price}
+
+                                    {/* Nombre */}
+                                    <h2
+                                        className={`text-xl font-bold ${
+                                            isHighlighted
+                                                ? 'text-white'
+                                                : 'text-gray-900 dark:text-white'
+                                        }`}
+                                    >
+                                        {plan.name}
+                                    </h2>
+
+                                    {/* Precio */}
+                                    <div className="mt-4 mb-6">
+                                        {plan.discount_price && (
+                                            <span
+                                                className={`text-sm line-through ${
+                                                    isHighlighted
+                                                        ? 'text-blue-200'
+                                                        : 'text-gray-400'
+                                                }`}
+                                            >
+                                                {plan.currency}{' '}
+                                                {plan.price.toFixed(2)}
+                                            </span>
+                                        )}
+                                        <div className="flex items-end gap-1">
+                                            <span
+                                                className={`text-4xl font-extrabold ${
+                                                    isHighlighted
+                                                        ? 'text-white'
+                                                        : 'text-gray-900 dark:text-white'
+                                                }`}
+                                            >
+                                                {plan.currency}{' '}
+                                                {effectivePrice.toFixed(2)}
+                                            </span>
+                                            <span
+                                                className={`mb-1.5 text-sm ${
+                                                    isHighlighted
+                                                        ? 'text-blue-200'
+                                                        : 'text-gray-400 dark:text-gray-500'
+                                                }`}
+                                            >
+                                                {BILLING_LABELS[
+                                                    plan.billing_cycle
+                                                ] ?? `/${plan.billing_cycle}`}
                                             </span>
                                         </div>
                                     </div>
+
+                                    {/* Features */}
+                                    {plan.features.length > 0 && (
+                                        <ul className="mb-8 flex-1 space-y-2.5">
+                                            {plan.features.map((f, i) => (
+                                                <li
+                                                    key={i}
+                                                    className="flex items-start gap-2.5 text-sm"
+                                                >
+                                                    <span
+                                                        className={`mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full ${
+                                                            isHighlighted
+                                                                ? 'bg-white/25 text-white'
+                                                                : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400'
+                                                        }`}
+                                                    >
+                                                        <Check className="h-2.5 w-2.5" />
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            isHighlighted
+                                                                ? 'text-blue-100'
+                                                                : 'text-gray-600 dark:text-gray-300'
+                                                        }
+                                                    >
+                                                        {f}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+
+                                    {/* CTA */}
+                                    <Link
+                                        href={`/payment/${plan.slug}`}
+                                        className={`mt-auto block w-full rounded-xl py-3 text-center text-sm font-semibold transition active:scale-95 ${
+                                            isHighlighted
+                                                ? 'bg-white text-blue-600 hover:bg-blue-50'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
+                                        }`}
+                                    >
+                                        Comenzar ahora
+                                    </Link>
                                 </div>
-
-                                <h3 className="mb-4 text-2xl font-bold">
-                                    {plan.name}
-                                </h3>
-
-                                <ul className="mb-10 flex-1 space-y-4">
-                                    {plan.features?.map((feature, idx) => (
-                                        <li
-                                            key={idx}
-                                            className="flex items-center gap-3 text-slate-600 dark:text-slate-400"
-                                        >
-                                            <div className="rounded-full bg-green-100 p-1 dark:bg-green-900/30">
-                                                <Check
-                                                    className="text-green-600 dark:text-green-400"
-                                                    size={14}
-                                                />
-                                            </div>
-                                            <span className="text-sm">
-                                                {feature.text}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-
-<Link
-    href={`/payment/${plan.slug}`}
-    className={`group flex items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white transition-all active:scale-95 ${
-        plan.slug === 'plus'
-            ? brandBg
-            : 'bg-slate-800 hover:bg-slate-900 dark:bg-slate-700'
-    }`}
->
-    Seleccionar Plan
-    <ArrowRight
-        size={18}
-        className="transition-transform group-hover:translate-x-1"
-    />
-</Link>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
-                </section>
+                )}
 
-                {/* --- GARANTÍA --- */}
-                <section className="mx-auto max-w-4xl px-6 pb-24">
-                    <div className="flex flex-col items-center rounded-[2rem] bg-blue-50 p-8 text-center md:flex-row md:text-left dark:bg-slate-900/50">
-                        <div className="mb-6 rounded-2xl bg-white p-4 shadow-sm md:mr-8 md:mb-0 dark:bg-slate-800">
-                            <ShieldCheck className="text-blue-500" size={48} />
-                        </div>
-                        <div>
-                            <h4 className="mb-2 text-xl font-bold">
-                                Compra 100% Segura
-                            </h4>
-                            <p className="text-slate-600 dark:text-slate-400">
-                                ¿No es lo que esperabas? No te preocupes. Tienes
-                                7 días de garantía para solicitar un reembolso
-                                completo si el contenido no satisface tus
-                                necesidades.
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                {/* Nota soft deletes */}
+                <p className="mt-10 text-center text-xs text-gray-400 dark:text-gray-600">
+                    Los planes adquiridos se mantienen activos hasta su fecha de
+                    vencimiento.
+                </p>
             </div>
         </PublicLayout>
     );

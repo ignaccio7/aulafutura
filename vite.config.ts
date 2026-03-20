@@ -4,8 +4,7 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
-const TUNNELMOLE_LARAVEL = 'yifeaq-ip-181-115-172-26.tunnelmole.net';
-// const TUNNELMOLE_VITE = 'vmg0fj-ip-181-115-172-26.tunnelmole.net';
+// const TUNNELMOLE_VITE = 'lhzyzr-ip-181-115-172-26.tunnelmole.net'; // <- Esto solo descomentar si utilizamos https
 const TUNNELMOLE_VITE = 'localhost';
 
 export default defineConfig({
@@ -29,8 +28,8 @@ export default defineConfig({
         port: 5173,
         hmr: {
             host: TUNNELMOLE_VITE, // ← solo hostname, sin protocolo
-            // protocol: 'wss',
-            // clientPort: 443,
+            // protocol: 'wss', // <- Esto solo descomentar si utilizamos https
+            // clientPort: 443, // <- Esto solo descomentar si utilizamos https
         },
     },
 });

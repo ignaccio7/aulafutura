@@ -88,6 +88,7 @@ export default function CheckoutMultiStep() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Accept: 'application/json',
                     'X-XSRF-TOKEN': xsrfToken, // ← X-XSRF-TOKEN, no X-CSRF-TOKEN
                 },
                 body: JSON.stringify({
@@ -102,11 +103,26 @@ export default function CheckoutMultiStep() {
             const data = await response.json();
 
             if (response.status === 422) {
-                setErrors(data.errors ?? {});
-                setStep(1);
+                // Laravel devuelve { errors: { email: ["mensaje"], ... } }
+                const fieldErrors: Record<string, string> = {};
+
+                // Aplanar: { email: ["msg"] } → { email: "msg" }
+                Object.entries(data.errors ?? {}).forEach(
+                    ([field, messages]) => {
+                        fieldErrors[field] = Array.isArray(messages)
+                            ? messages[0]
+                            : (messages as string);
+                    },
+                );
+
+                setErrors(fieldErrors);
+                setStep(1); // volver al paso 1 donde están los campos
+
+                // Mostrar el primer error como banner general también
+                const primerError = Object.values(fieldErrors)[0];
+                if (primerError) setServerError(primerError);
                 return;
             }
-
             if (data.url) {
                 window.location.href = data.url;
                 return;
@@ -114,7 +130,7 @@ export default function CheckoutMultiStep() {
 
             setServerError(data.message ?? 'Error al procesar el pago.');
         } catch {
-            setServerError('Error de conexión. Intenta nuevamente.');
+            setServerError('Error de conexión. Intenta nuevamente más tarde.');
         } finally {
             setLoading(false);
         }

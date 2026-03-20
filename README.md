@@ -42,3 +42,7 @@ Convenientemente usar feat/nombre-rama
 | **Nombre titular** | `APRO APRO` |
 | **Tipo documento** | `DNI` |
 | **Número DNI** | `12345678` |
+
+
+C:\Php\php.ini
+upload_max_filesize, post_max_size y memory_limit a 512

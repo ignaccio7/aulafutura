@@ -14,7 +14,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LessonProgressController;
+use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SubscriptionPlanAdminController;
 use Illuminate\Support\Facades\Log;
 
 
@@ -51,6 +53,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::post('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    // Rutas para planes de suscripción (admin)
+    Route::get('/subscription-plans', [SubscriptionPlanAdminController::class, 'index'])->name('subscription-plans.index');
+    Route::post('/subscription-plans', [SubscriptionPlanAdminController::class, 'store'])->name('subscription-plans.store');
+    Route::get('/subscription-plans/{plan}', [SubscriptionPlanAdminController::class, 'show'])->name('subscription-plans.show');
+    Route::post('/subscription-plans/{plan}', [SubscriptionPlanAdminController::class, 'update'])->name('subscription-plans.update');
+    Route::delete('/subscription-plans/{plan}', [SubscriptionPlanAdminController::class, 'destroy'])->name('subscription-plans.destroy');
 });
 
 // Rutas para el usuario estandar
@@ -61,7 +70,18 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->name('user
     // Rutas para los cursos que el usuario tendra acceso 
     Route::get('/courses', [UserController::class, 'courses'])->name('courses.index');
     Route::post('/lesson-progress', [LessonProgressController::class, 'toggle'])->name('lesson.progress.toggle');
+
+    // Ruta para cambiar el plan si en caso quisiera cambiar
+    // ── Dentro del grupo user (auth, verified, role:user) ──────────────────────
+    Route::get('/planes', [UserController::class, 'planes'])->name('planes.index');
+
+    // changePlan ahora redirige a MP, no hace el cambio directo
+    Route::post('/change-plan', [MembershipController::class, 'changePlan'])->name('membership.change-plan');
 });
+
+Route::get('/user/change-plan/success', [MembershipController::class, 'changePlanSuccess'])->name('membership.change-plan.success');
+Route::get('/user/change-plan/failure', [MembershipController::class, 'changePlanFailure'])->name('membership.change-plan.failure');
+Route::get('/user/change-plan/pending', [MembershipController::class, 'changePlanPending'])->name('membership.change-plan.pending');
 
 // Rutas publicas
 Route::get('/courses/{id}', [CatalogController::class, 'show'])->name('catalog.courses.show');

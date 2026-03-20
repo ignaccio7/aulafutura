@@ -36,12 +36,20 @@ class PaymentController extends Controller
     public function createPreference(Request $request)
     {
         $request->validate([
-            'plan_slug'            => 'required|string',
-            'name'                 => 'required|string|max:255',
-            'email'                => 'required|email|unique:users,email',
-            'password'             => 'required|string|min:8|confirmed',
+            'plan_slug'   => 'required|string',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
+            'password'    => 'required|string|min:8|confirmed',
+        ], [
+            'name.required'        => 'El nombre es requerido.',
+            'email.required'       => 'El correo electrónico es requerido.',
+            'email.email'          => 'El correo no tiene un formato válido.',
+            'email.unique'         => 'Este correo ya está registrado. ¿Ya tienes cuenta?',
+            'password.required'    => 'La contraseña es requerida.',
+            'password.min'         => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed'   => 'Las contraseñas no coinciden.',
+            'plan_slug.required'   => 'No se especificó el plan.',
         ]);
-
         $plan = SubscriptionPlan::active()
             ->where('slug', $request->plan_slug)
             ->firstOrFail();
