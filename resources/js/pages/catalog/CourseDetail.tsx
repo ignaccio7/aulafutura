@@ -47,6 +47,7 @@ interface Product {
 interface PageProps {
     product: Product;
     userProgress: number[];
+    hasAccess: boolean;
     [key: string]: unknown;
 }
 
@@ -84,13 +85,16 @@ function LessonRow({
     index,
     onSelect,
     completed,
+    hasAccess,
 }: {
     lesson: Lesson;
     index: number;
     onSelect: (lesson: Lesson) => void;
     completed: boolean;
+    hasAccess: boolean;
 }) {
     const isPreview = index === 0;
+    const isUnlocked = hasAccess || isPreview;
 
     return (
         <div
@@ -103,7 +107,7 @@ function LessonRow({
         >
             <div className="flex items-center gap-4">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                    {isPreview ? (
+                    {isUnlocked ? (
                         <Play size={14} className="text-[#1D4ED8]" />
                     ) : (
                         <Lock size={14} className="text-slate-400" />
@@ -111,7 +115,7 @@ function LessonRow({
                 </span>
                 <div>
                     <p
-                        className={`font-medium ${isPreview ? 'text-slate-800 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}
+                        className={`font-medium ${isUnlocked ? 'text-slate-800 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}
                     >
                         {lesson.title}
                     </p>
@@ -157,7 +161,7 @@ function LessonRow({
                 >
                     <CheckCircle size={18} />
                 </button>
-                {!isPreview && (
+                {!isUnlocked && (
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-400 dark:bg-slate-800">
                         Bloqueado
                     </span>
@@ -170,7 +174,7 @@ function LessonRow({
 // ─── Página principal ─────────
 
 export default function CourseDetail() {
-    const { product, userProgress } = usePage<PageProps>().props;
+    const { product, userProgress, hasAccess } = usePage<PageProps>().props;
     const course = product.course;
     const lessons = course?.lessons ?? [];
     const [lessonSearch, setLessonSearch] = useState('');
@@ -258,31 +262,48 @@ export default function CourseDetail() {
                             </div>
                         )}
                         {/* Reproductor */}
-                        {selectedLesson && selectedLesson.video_url && (
-                            <div className="mb-8">
-                                <div className="overflow-hidden rounded-2xl bg-black shadow-xl">
-                                    <iframe
-                                        src={getEmbedUrl(
-                                            selectedLesson.video_url,
+                        {selectedLesson &&
+                            selectedLesson.video_url &&
+                            (hasAccess ||
+                                filteredLessons.indexOf(selectedLesson) ===
+                                    0) && (
+                                <div className="mb-8">
+                                    <div className="overflow-hidden rounded-2xl bg-black shadow-xl">
+                                        {selectedLesson.video_url.startsWith(
+                                            'http',
+                                        ) ? (
+                                            <iframe
+                                                src={getEmbedUrl(
+                                                    selectedLesson.video_url,
+                                                )}
+                                                className="aspect-video w-full"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        ) : (
+                                            <video
+                                                src={`/storage/${selectedLesson.video_url}`}
+                                                className="aspect-video w-full"
+                                                controls
+                                                controlsList="nodownload"
+                                            />
                                         )}
-                                        className="aspect-video w-full"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    />
+                                    </div>
+                                    <div className="mt-3 flex items-center justify-between">
+                                        <p className="font-semibold text-slate-900 dark:text-white">
+                                            {selectedLesson.title}
+                                        </p>
+                                        <button
+                                            onClick={() =>
+                                                setSelectedLesson(null)
+                                            }
+                                            className="text-sm text-slate-400 hover:text-slate-600"
+                                        >
+                                            Cerrar
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="mt-3 flex items-center justify-between">
-                                    <p className="font-semibold text-slate-900 dark:text-white">
-                                        {selectedLesson.title}
-                                    </p>
-                                    <button
-                                        onClick={() => setSelectedLesson(null)}
-                                        className="text-sm text-slate-400 hover:text-slate-600"
-                                    >
-                                        Cerrar
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                            )}
                         {/* Barra de progreso */}
                         {userProgress.length > 0 && (
                             <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
@@ -338,6 +359,7 @@ export default function CourseDetail() {
                                         completed={userProgress.includes(
                                             lesson.id,
                                         )}
+                                        hasAccess={hasAccess}
                                     />
                                 ))}
                             </div>
@@ -385,9 +407,15 @@ export default function CourseDetail() {
                                     </p>
                                 </div>
 
-                                <button className="w-full rounded-2xl bg-[#1D4ED8] py-4 font-bold text-white shadow-lg transition hover:opacity-90 dark:bg-blue-600">
-                                    Comprar curso
-                                </button>
+                                {hasAccess ? (
+                                    <button className="w-full rounded-2xl bg-emerald-500 py-4 font-bold text-white shadow-lg transition hover:opacity-90">
+                                        Ir al curso
+                                    </button>
+                                ) : (
+                                    <button className="w-full rounded-2xl bg-[#1D4ED8] py-4 font-bold text-white shadow-lg transition hover:opacity-90 dark:bg-blue-600">
+                                        Comprar curso
+                                    </button>
+                                )}
 
                                 <div className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
                                     <p className="flex items-center gap-2">

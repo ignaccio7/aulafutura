@@ -34,16 +34,16 @@ class CatalogController extends Controller
 
         $categories = Category::where('type', 'course')->get();
 
-        return Inertia::render('catalog/courses', [
-            'products'   => $products,
-            'categories' => $categories,
-            'filters'    => [
-                'category' => $categoryId,
-            ],
-        ]);
-    }
+    return Inertia::render('catalog/courses', [
+        'products'   => $products,
+        'categories' => $categories,
+        'filters'    => [
+            'category' => $categoryId,
+        ],
+    ]);
+}
 
- public function show(int $id): Response
+public function show(int $id): Response
 {
     $product = Product::where('type', 'course')
         ->where('is_active', true)
@@ -53,6 +53,8 @@ class CatalogController extends Controller
         ])
         ->findOrFail($id);
         $userProgress = [];
+    $hasAccess = false;
+
     if (auth()->check()) {
         $lessonIds = $product->course?->lessons->pluck('id') ?? [];
         $userProgress = \App\Models\LessonProgress::where('user_id', auth()->id())
@@ -60,11 +62,19 @@ class CatalogController extends Controller
             ->where('completed', true)
             ->pluck('lesson_id')
             ->toArray();
+
+        $hasAccess = \App\Models\Membership::where('user_id', auth()->id())
+            ->active()
+            ->whereHas('plan.products', function ($q) use ($id) {
+                $q->where('products.id', $id);
+            })
+            ->exists();
     }
 
     return Inertia::render('catalog/CourseDetail', [
         'product' => $product,
         'userProgress' => $userProgress,
+        'hasAccess' => $hasAccess,
     ]);
 }
 

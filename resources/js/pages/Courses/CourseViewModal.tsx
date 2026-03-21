@@ -242,6 +242,27 @@ export default function CourseViewModal({
                                                                     lesson.duration,
                                                                 )}
                                                             </span>
+                                                            {lesson.video_url && (
+                                                                <a
+                                                                    href={
+                                                                        lesson.video_url.startsWith(
+                                                                            'http',
+                                                                        )
+                                                                            ? lesson.video_url
+                                                                            : `/storage/${lesson.video_url}`
+                                                                    }
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-xs text-blue-500 hover:text-blue-700"
+                                                                    onClick={(
+                                                                        e,
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
+                                                                    Ver video
+                                                                </a>
+                                                            )}
                                                         </div>
                                                     ))}
                                             </div>
