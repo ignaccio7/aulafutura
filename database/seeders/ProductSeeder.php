@@ -25,7 +25,7 @@ class ProductSeeder extends Seeder
             // Literatura
             [
                 'category_id' => $literaturaCat->id,
-                'title' => 'Don Quijote de la Mancha',
+                'title' => 'El principito',
                 'description' => 'La novela cumbre de la literatura española, escrita por Miguel de Cervantes.',
                 'price' => 25.00,
                 'thumbnail' => 'https://picsum.photos/seed/quijote/400/600',
@@ -109,7 +109,7 @@ class ProductSeeder extends Seeder
 
             // Se asocia el archivo del libro
             $book->bookFile()->create([
-                'file_path' => 'books/dummy_book_content.pdf',
+                'file_path' => 'books/el_principito.pdf',
             ]);
         }
 

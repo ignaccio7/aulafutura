@@ -85,7 +85,7 @@ export default function BookFormModal({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const url = isEdit ? `/books/${book!.id}` : '/books';
+        const url = isEdit ? `/admin/books/${book!.id}` : '/admin/books';
         post(url, {
             forceFormData: true,
             onSuccess: () => handleClose(),

@@ -31,7 +31,7 @@ export default function BookViewModal({ bookId, onClose, categories }: Props) {
             return;
         }
         setLoading(true);
-        fetch(`/books/${bookId}`)
+        fetch(`/admin/books/${bookId}`)
             .then((r) => r.json())
             .then((data) => {
                 setBook(data);
@@ -185,7 +185,7 @@ export default function BookViewModal({ bookId, onClose, categories }: Props) {
                                 {book.book_file && (
                                     <div className="mt-4 h-[500px] w-full overflow-hidden rounded-xl border">
                                         <iframe
-                                            src={`/books/${book.id}/preview`}
+                                            src={`/admin/books/${book.id}/preview`}
                                             className="h-full w-full"
                                         />
                                     </div>

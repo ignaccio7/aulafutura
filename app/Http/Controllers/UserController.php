@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\SubscriptionPlanResource;
 use App\Models\SubscriptionPlan;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -122,6 +124,49 @@ class UserController extends Controller
         return inertia('user/plans', [
             'plans'         => SubscriptionPlanResource::collection($plans),
             'currentPlanId' => $currentPlanId,
+        ]);
+    }
+
+    public function bookPreview(Product $book)
+    {
+        $user = request()->user();
+
+        // Verificar que el usuario tiene membresía activa con este libro
+        $membership = $user->memberships()
+            ->where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->with('plan.products')
+            ->latest()
+            ->first();
+
+        // Si no tiene membresía o el libro no está en su plan → 403
+        if (!$membership) {
+            abort(403, 'No tienes acceso a este libro.');
+        }
+
+        $hasAccess = $membership->plan->products
+            ->where('id', $book->id)
+            ->isNotEmpty();
+
+        if (!$hasAccess) {
+            abort(403, 'Este libro no está incluido en tu plan.');
+        }
+
+        $book->load('bookFile');
+
+        if (!$book->bookFile) {
+            abort(404, 'El libro no tiene archivo.');
+        }
+
+        $path = $book->bookFile->file_path;
+
+        if (!Storage::disk('private')->exists($path)) {
+            abort(404, 'Archivo no encontrado.');
+        }
+
+        return response()->file(Storage::disk('private')->path($path), [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $book->title . '.pdf"',
         ]);
     }
 }

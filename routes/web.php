@@ -77,6 +77,8 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->name('user
 
     // changePlan ahora redirige a MP, no hace el cambio directo
     Route::post('/change-plan', [MembershipController::class, 'changePlan'])->name('membership.change-plan');
+
+    Route::get('/books/{book}/preview', [UserController::class, 'bookPreview'])->name('user.books.preview');
 });
 
 Route::get('/user/change-plan/success', [MembershipController::class, 'changePlanSuccess'])->name('membership.change-plan.success');

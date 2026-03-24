@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
-// const TUNNELMOLE_VITE = 'lhzyzr-ip-181-115-172-26.tunnelmole.net'; // <- Esto solo descomentar si utilizamos https
+// const TUNNELMOLE_VITE = 'rusty-raptureless-flossily.ngrok-free.dev'; // <- Esto solo descomentar si utilizamos https
 const TUNNELMOLE_VITE = 'localhost';
 
 export default defineConfig({
