@@ -64,8 +64,14 @@ class BookController extends Controller
 
     public function show(Product $book)
     {
+        // Aseguramos que solo se muestren libros
+        abort_if($book->type !== 'book', 404);
+
         $book->load(['bookFile', 'category']);
-        return response()->json($book);
+
+        return Inertia::render('catalog/BookDetail', [
+            'book' => $book
+        ]);
     }
 
     public function update(Request $request, Product $book)
